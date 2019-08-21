@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+<div class="ml-5" ><b> <h2>Введите слово </h2></b><br>
+    <form class="form-inline my-2">
+        <input  value="" id="addText" name="value" class="form-control mr-sm-2" type="text" placeholder="Введите слово" aria-label="Search">
+        <button  id="pushButton" class="btn btn-outline-success my-2 my-sm-0" type="submit">Добавить</button>
+    </form>
+    <h3>Слова в массиве:</h3>
+<div class="row">
+    <div class="card col-lg-4" style="width: 18rem;">
+        <ul class="list-group list-group-flush ">
+            <% for(let i in list) {%>
+            <li class="list-group-item " ><a><img src="img/cancel.svg" width = "25" height="25" class="deleteItem float-right" data-index="<%=i%>"></a><%=list[i] %> </li>
+            <%} %>
+        </ul>
+    </div>
+
+    <div >
+        <form class="col-lg-13 align-text-bottom">
+            <input  value="" id="addText" name="value" class="  form-control mr-sm-2" type="text" placeholder="Домен" aria-label="Search">
+            <input  value="" id="addText" name="value" class="  form-control mr-sm-2" type="text" placeholder="IP" aria-label="Search">
+            <button  id="pushButton" class="btn btn-outline-warning my-2 my-sm-0" type="submit">Отправить</button>
+        </form>
+    </div>
+</div>
+<script src="./scriptClient.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+
+
