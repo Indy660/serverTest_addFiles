@@ -7,17 +7,17 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-<div class="ml-5" ><b> <h2>Введите слово </h2></b><br>
+<div class="ml-5" ><b> <h2>Введите название файла </h2></b><br>
     <form class="form-inline my-2">
-        <input  value="" id="addText" name="value" class="form-control mr-sm-2" type="text" placeholder="Введите слово" aria-label="Search">
+        <input  value="" id="addFiles" name="value" class="form-control mr-sm-2" type="text" placeholder="Файл" aria-label="Search">
         <button  id="pushButton" class="btn btn-outline-success my-2 my-sm-0" type="submit">Добавить</button>
     </form>
-    <h3>Слова в массиве:</h3>
+    <h3>Список файлов:</h3>
 <div class="row">
     <div class="card col-lg-4" style="width: 18rem;">
         <ul class="list-group list-group-flush ">
-            <% for(let i in list) {%>
-            <li class="list-group-item " ><a><img src="img/cancel.svg" width = "25" height="25" class="deleteItem float-right" data-index="<%=i%>"></a><%=list[i] %> </li>
+            <% for(let i in value) {%>
+            <li class="list-group-item " ><a><img src="img/cancel.svg" width = "25" height="25" class="deleteItem float-right" data-index="<%=value[i]%>"></a><%=value[i] %> </li>
             <%} %>
         </ul>
     </div>
