@@ -24,9 +24,13 @@
 
     <div >
         <form class="col-lg-13 align-text-bottom">
-            <input  value="" id="addText" name="value" class="  form-control mr-sm-2" type="text" placeholder="Домен" aria-label="Search">
-            <input  value="" id="addText" name="value" class="  form-control mr-sm-2" type="text" placeholder="IP" aria-label="Search">
-            <button  id="pushButton" class="btn btn-outline-warning my-2 my-sm-0" type="submit">Отправить</button>
+            <input  value="" id="domain" name="value" class="  form-control mr-sm-2" type="text" placeholder="Домен" aria-label="Search">
+            <input  value="" id="IP" name="value" class="  form-control mr-sm-2" type="text" placeholder="IP" aria-label="Search">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="defaultChecked2" checked>
+                <label class="custom-control-label" for="defaultChecked2">redirect</label>
+            </div>
+            <button  id="addText" class="btn btn-outline-warning my-2 my-sm-0" type="submit">Отправить</button>
         </form>
     </div>
 </div>
