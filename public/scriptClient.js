@@ -1,11 +1,4 @@
-// const inputText=document.getElementById("addText").value;
-// const pushButton=document.getElementById("pushButton"
-// pushButton.addEventListener("click", function(){addItem(array)});
-//
-// function addItem(array) {
-//     array.push(inputText);
-//     inputText.innerHTML=""
-// }
+
 $("#pushButton").click(function(event) {
     event.preventDefault();
     const val = $("#addText").val();
@@ -39,5 +32,4 @@ $(".deleteItem").click(function(event) {
             window.location.reload()    //если успешно, то перезапускаем страницу через аякс
         }
     });
-
 });
