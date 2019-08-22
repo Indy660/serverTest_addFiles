@@ -7,22 +7,22 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-<div class="ml-5" ><b> <h2>Введите название файла </h2></b><br>
-    <form class="form-inline my-2">
-        <input  value="" id="addFiles" name="value" class="form-control mr-sm-2" type="text" placeholder="Файл" aria-label="Search">
-        <button  id="pushButton" class="btn btn-outline-success my-2 my-sm-0" type="submit">Добавить</button>
+<div class="ml-5" ><b> <h2>Поиск файлов</h2></b><br>
+    <form class="form-inline my-2" action="http://localhost:3000/search">
+        <input  value="" id="searchFiles" name="file" class="form-control mr-sm-2" type="text" placeholder="Поиск" aria-label="Search">
+        <button  id="searchButton" class="btn btn-outline-success my-2 my-sm-0" type="submit">Найти</button>
     </form>
     <h3>Список файлов:</h3>
 <div class="row">
     <div class="card col-lg-4" style="width: 18rem;">
         <ul class="list-group list-group-flush ">
             <% for(let i in value) {%>
-            <li class="list-group-item " ><a><img src="img/cancel.svg" width = "25" height="25" class="deleteItem float-right" data-index="<%=value[i]%>"></a><%=value[i] %> </li>
+            <li class="list-group-item " ><a><img src="img/cancel.svg" width = "25" height="25" class="deleteItem float-right" data-index="<%=value[i]+".conf"%>"></a><%=value[i] %> </li>
             <%} %>
         </ul>
     </div>
 
-    <div >
+    <div class="card-footer">
         <form class="col-lg-13 align-text-bottom">
             <input  value="" id="domain" name="value" class="  form-control mr-sm-2" type="text" placeholder="Домен" aria-label="Search">
             <input  value="" id="IP" name="value" class="  form-control mr-sm-2" type="text" placeholder="IP" aria-label="Search">
@@ -34,6 +34,7 @@
             <button  id="addText" class="btn btn-outline-warning my-2 my-sm-0" type="submit">Отправить</button>
         </form>
     </div>
+</div>
 </div>
 <script src="./scriptClient.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

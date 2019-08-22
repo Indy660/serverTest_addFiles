@@ -10,30 +10,23 @@ const url = require('url');
 
 const directory="C:\\Users\\User\\Desktop\\Работа\\serverTest_addFiles\\experimentFolder";
 
+
 //добовляет файлы которые на компьютере для загрузки если они имеются
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 //Главная страница
 app.get('/', function (req, res) {
-    const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
     //первый способ
     // const filesWithoutEnd=files.map(function(elem) {
     //     return path.parse(elem).name
     // });
+
+    const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
     const filesWithoutEnd=files.map(function(elem) {  //второй способ
         return path.basename(elem, path.extname(elem))
     });
-
-    res.render('home', { title: 'Directory', value: filesWithoutEnd});  //генерация страниц 1-ый параметр шаблон
-});
-
-//  добавление файла в текущую директорию
-app.get('/add', function(req, res){
-    let newFile = directory+"\\"+req.query.nameFile;
-    fs.writeFile(newFile,"Это пример текста!" , function(error){
-        if(error) throw error; //Использую инструкцию throw для генерирования исключения
-        res.send("200");//выведем 200ок
-    });
+    res.render('home', {value: filesWithoutEnd});  //генерация страниц 1-ый параметр шаблон
 });
 
 
@@ -46,20 +39,7 @@ app.get('/del', function(req, res) {
     });
 });
 
-//только добавляла файлы с содержанием домэна и айди
-// app.get('/addDomain', function(req, res){
-//     let domain = req.query.domain;
-//     let ip = req.query.ip;
-//     let fileName = directory +"\\" +domain + '.conf';
-//     let text='Domain ' + domain + '\n' + 'IP: ' + ip;   //текст внутри файла
-//     fs.writeFile(fileName, text , function(error){
-//         if(error) throw error;  //Использую инструкцию throw для генерирования исключения
-//        fs.readFileSync(fileName, "utf8");
-//         res.send("200");        //выведем 200ок
-//     });
-// });
-
-//вспомогательная функция
+//вспомогательная функция для перезаписи файлов
 function changeText(way, str1, str2) {
 let oldText=fs.readFileSync(way, "utf8");
 let domenWithoutDots=str1.replace(/\./g, "");
@@ -79,8 +59,63 @@ app.get('/addDomain', function(req, res){
     });
 });
 
+//поиск файлов
+app.get('/search', function(req, res){
+    let searchWord = req.query.file;
+    const files = fs.readdirSync(directory);
+    let searchFiles = files.filter(function(elem) {
+        if (elem.indexOf(searchWord) > -1) {
+            return true;
+    }
+        else {return false}
+    });
+    res.render('home', { value: searchFiles});  //генерация страниц 1-ый параметр шаблон
+});
+
+
+//страница входа
+app.get('/enter', function (req, res) {
+    res.render('enter' );  //генерация страниц 1-ый параметр шаблон
+});
+
+//страница проверки
+app.get('/ajax/enter', function (req, res) {
+    let email = req.query.email;
+    let password = req.query.password;
+if (email==="sobaka" && password==123) {
+    res.send("200")
+}
+else {res.send("400")}
+});
+
+
 
 
 app.listen(3000, function () {
     console.log('Отслеживаем порт: 3000!');
 });
+
+
+//только добавляла файлы с содержанием домэна и айди
+// app.get('/addDomain', function(req, res){
+//     let domain = req.query.domain;
+//     let ip = req.query.ip;
+//     let fileName = directory +"\\" +domain + '.conf';
+//     let text='Domain ' + domain + '\n' + 'IP: ' + ip;   //текст внутри файла
+//     fs.writeFile(fileName, text , function(error){
+//         if(error) throw error;  //Использую инструкцию throw для генерирования исключения
+//        fs.readFileSync(fileName, "utf8");
+//         res.send("200");        //выведем 200ок
+//     });
+// });
+
+//  добавление файла в текущую директорию
+// app.get('/add', function(req, res){
+//     let newFile = directory+"\\"+req.query.nameFile;
+//     fs.writeFile(newFile,"Это пример текста!" , function(error){
+//         if(error) throw error; //Использую инструкцию throw для генерирования исключения
+//         res.send("200");//выведем 200ок
+//     });
+// });
+
+

@@ -1,21 +1,27 @@
-
-$("#pushButton").click(function(event) {
+$("#enterButton").click(function(event) {
     event.preventDefault();
-    const val = $("#addFiles").val();
-    //const val = $("#addText").attr('value');   тоже самое, что и писал выше
-    $("#addFiles").val("");
+    const emailUser = $("#inputEmail").val();
+    $("#inputEmail").val("");
+    const passwordUser = $("#inputPassword").val();
+    $("#inputPassword").val("");
     $.ajax({
-        url: "/add",   //путь
+        url: "/ajax/enter",   //путь
         type: "GET",   //Метод отправки
         data:{
-            nameFile: val  //ключ:значение,потом все складывается с url
+            email: emailUser,       //ключ:значение,потом все складывается с url
+            password: passwordUser  //ключ:значение,потом все складывается с url
         },
-        success: function(){
-            window.location.reload()    //если запросо прошел успешно, то перезапускаем страницу через аякс
-        }
+
+        success: function(data){
+            if (data==="200") {
+                window.location.assign("http://localhost:3000")
+            }    else {alert("Вы ввели неправильный логин или пароль!")}
+            console.log(emailUser,passwordUser)}
     });
 
 });
+
+
 
 $("#addText").click(function(event) {
     event.preventDefault();
@@ -28,7 +34,7 @@ $("#addText").click(function(event) {
         type: "GET",   //Метод отправки
         data:{
             domain: domain,  //ключ:значение,потом все складывается с url
-            ip: ip  //ключ:значение,потом все складывается с url
+            ip: ip           //ключ:значение,потом все складывается с url
         },
         success: function(){
             window.location.reload()    //если запросо прошел успешно, то перезапускаем страницу через аякс
@@ -54,3 +60,22 @@ $(".deleteItem").click(function(event) {
     });
 });
 
+
+
+//старая функция добавления файлов
+// $("#pushButton").click(function(event) {
+//     event.preventDefault();
+//     const val = $("#addFiles").val();
+//     //const val = $("#addText").attr('value');   тоже самое, что и писал выше
+//     $("#addFiles").val("");
+//     $.ajax({
+//         url: "/add",   //путь
+//         type: "GET",   //Метод отправки
+//         data:{
+//             nameFile: val  //ключ:значение,потом все складывается с url
+//         },
+//         success: function(){
+//             window.location.reload()    //если запросо прошел успешно, то перезапускаем страницу через аякс
+//         }
+//     });
+// });
