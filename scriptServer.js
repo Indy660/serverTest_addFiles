@@ -16,9 +16,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 //Главная страница
 app.get('/', function (req, res) {
     const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
-    // console.log(files[0])
-    // const filesWithoutEnd=path.basename(directory+files[0], path.extname(files[0]));
-    res.render('home', { title: 'Directory', value: files});  //генерация страниц 1-ый параметр шаблон
+    //первый способ
+    // const filesWithoutEnd=files.map(function(elem) {
+    //     return path.parse(elem).name
+    // });
+    const filesWithoutEnd=files.map(function(elem) {  //второй способ
+        return path.basename(elem, path.extname(elem))
+    });
+
+    res.render('home', { title: 'Directory', value: filesWithoutEnd});  //генерация страниц 1-ый параметр шаблон
 });
 
 //  добавление файла в текущую директорию
@@ -78,15 +84,3 @@ app.get('/addDomain', function(req, res){
 app.listen(3000, function () {
     console.log('Отслеживаем порт: 3000!');
 });
-
-
-// path.basename(p[, ext])
-//
-// path.extname(p)
-
-// path.basename('/foo/bar/baz/asdf/quux.html', '.html');
-// path.basename('/foo/bar/baz/asdf/quux.html', path.extname());
-// // Returns: 'quux'
-
-//basename
-//extname path
