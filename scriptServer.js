@@ -17,12 +17,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Главная страница
 app.get('/', function (req, res) {
+    const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
     //первый способ
     // const filesWithoutEnd=files.map(function(elem) {
     //     return path.parse(elem).name
     // });
-
-    const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
     const filesWithoutEnd=files.map(function(elem) {  //второй способ
         return path.basename(elem, path.extname(elem))
     });
@@ -75,18 +74,87 @@ app.get('/search', function(req, res){
 
 //страница входа
 app.get('/enter', function (req, res) {
-    res.render('enter' );  //генерация страниц 1-ый параметр шаблон
+    res.render('enter' );
 });
 
-//страница проверки
+
+
+// const userList = { id: 1, name: 'Admin', login: 'Admin', password:"qwe"}
+// function threreIsSuchUser(list){
+//     for (let id in list) {
+//         alert(id)        // выводит ключи
+//     }
+// }
+
+// const userList = { id: 1, name: 'Admin', login: 'Admin', password:"qwe"}
+// function threreIsSuchUser(list){
+//     for (let id in list) {
+//         alert(list[id])        // выводит значения ключей
+//     }
+// }
+
+const userList = [
+    { id: 1, name: 'Admin', login: 'Admin', password:"qwe"},
+    { id: 2, name: 'TestUser', login: 'test', password:"123"},
+    { id: 3, name: 'Dima', login: 'DimaK', password:"12345"}
+];
+
+function threreIsSuchUser(list, trueLogin) {
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].login === trueLogin) {
+            return list[i]
+        }
+    }
+    return false
+}
+
+
+
+//страница проверки данных для входа
 app.get('/ajax/enter', function (req, res) {
     let email = req.query.email;
     let password = req.query.password;
-if (email==="sobaka" && password==123) {
-    res.send("200")
-}
-else {res.send("400")}
-});
+    const result=threreIsSuchUser(userList, email);
+    if (result && password===result.password) {        //email как-будто равен логину
+        const out = {
+            success: 1,
+            name: result.name,
+            user: result.id
+        };
+
+        res.json(out)            //отправляю json формат на клиент
+        //res.type('json')       //тоже самое
+        //res.send(JSON.stringify(out)) //тоже самое
+    }
+    else if (result&&password!==result.password) {        //email как-будто равен логину
+        let message="Вы ввели неправильно пароль!";
+        res.json({success:0, message})           //отправляю json формат на клиент
+        // 2) res.json({
+        //     success:0,
+        //     message: "Вы ввели неправильно пароль!"
+        // })
+        // 3) res.json({
+        //     success:0,
+        //     message: message
+        // })
+        //
+        // 4) const out = {
+        //     success:0,
+        //     message: message
+        // }
+        // res.json(out)
+        //
+        // 5) const out = {
+        //     success:0,
+        //     message
+        // }
+        // res.json(out)        //все способы передать на клиент сообщение
+    }
+    else {
+        let message="Такого пользователя не существует!";
+        res.json({success:0, message})
+    }
+ });
 
 
 
