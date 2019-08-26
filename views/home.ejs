@@ -19,7 +19,7 @@
     <div class="card col-lg-4" style="width: 18rem;">
         <ul class="list-group list-group-flush ">
             <% for(let i in value) {%>
-            <li class="list-group-item " ><a><img src="img/cancel.svg" width = "25" height="25" class="deleteItem float-right" data-index="<%=value[i]+".conf"%>"></a><%=value[i] %> </li>
+            <li class="list-group-item " ><a><img src="img/cancel.svg" width = "25" height="25" class="deleteFile float-right" data-index="<%=value[i]+".conf"%>"></a><%=value[i] %> </li>
             <%} %>
         </ul>
     </div>
@@ -28,17 +28,13 @@
         <form class="col-lg-13 align-text-bottom">
             <input  value="" id="domain" name="value" class="  form-control mr-sm-2" type="text" placeholder="Домен" aria-label="Search">
             <input  value="" id="IP" name="value" class="  form-control mr-sm-2" type="text" placeholder="IP" aria-label="Search">
-<!--чекбокс, сейчас не нужен-->
-            <!--            <div class="custom-control custom-checkbox">-->
-<!--                <input type="checkbox" class="custom-control-input" id="defaultChecked2" checked>-->
-<!--                <label class="custom-control-label" for="defaultChecked2">redirect</label>-->
-<!--            </div>-->
-            <button  id="addText" class="btn btn-outline-warning my-2 my-sm-0" type="submit">Отправить</button>
+
+            <button  id="addFile" class="btn btn-outline-warning my-2 my-sm-0" type="submit">Отправить</button>
         </form>
     </div>
 </div>
+    <button  type="submit" class="btn btn-primary mt-3" id="seeUsersButton">Админка</button>
 </div>
-
 <script src="./scriptClient.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

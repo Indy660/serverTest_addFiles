@@ -31,12 +31,14 @@ app.get('/', function (req, res) {
 
 //  удаления файла из текущей директории
 app.get('/del', function(req, res) {
-    const folder = directory+"\\"+req.query.delFile;
-    fs.unlink(folder, err => {
+    const folder = directory + "\\" + req.query.delFile;
+    fs.unlink(folder, err => {   //CALLBACK ФУНКЦИЯ, первый способ
         console.error(err);
         res.send("200");    //выведем 200ок
-    });
+    })
 });
+
+
 
 //вспомогательная функция для перезаписи файлов
 function changeText(way, str1, str2) {
@@ -46,7 +48,7 @@ let newText=oldText.replace(/__DOMAIN__/g, str1).replace(/__DOMAINWITHOUTDOT__/g
     return newText
 }
 
-//перезапись файла template.conf на выбранный файл
+//перезапись файла template.conf на выбранный файл   //CALLBACK ФУНКЦИЯ
 app.get('/addDomain', function(req, res){
     let domain = req.query.domain;
     let ip = req.query.ip;
@@ -74,9 +76,8 @@ app.get('/search', function(req, res){
 
 //страница входа
 app.get('/enter', function (req, res) {
-    res.render('enter' );
+    res.render('enter');
 });
-
 
 
 // const userList = { id: 1, name: 'Admin', login: 'Admin', password:"qwe"}
@@ -93,7 +94,7 @@ app.get('/enter', function (req, res) {
 //     }
 // }
 
-const userList = [
+let userList = [
     { id: 1, name: 'Admin', login: 'Admin', password:"qwe"},
     { id: 2, name: 'TestUser', login: 'test', password:"123"},
     { id: 3, name: 'Dima', login: 'DimaK', password:"12345"}
@@ -108,13 +109,11 @@ function threreIsSuchUser(list, trueLogin) {
     return false
 }
 
-
-
 //страница проверки данных для входа
 app.get('/ajax/enter', function (req, res) {
-    let email = req.query.email;
+    let login = req.query.login;
     let password = req.query.password;
-    const result=threreIsSuchUser(userList, email);
+    const result=threreIsSuchUser(userList, login);
     if (result && password===result.password) {        //email как-будто равен логину
         const out = {
             success: 1,
@@ -157,6 +156,28 @@ app.get('/ajax/enter', function (req, res) {
  });
 
 
+//страница вывода таблицы пользователей
+app.get('/users', function (req, res) {
+    res.render('list_users', {users: userList} );
+});
+
+
+//страница со списком всех пользователей
+app.get('/ajax/users', function (req, res) {
+    let user = req.query.user;
+    let login = req.query.login;
+    let password = req.query.password;
+    const newUserArray={id:userList.length+1, name:user,  login: login, password:password};
+    let result=threreIsSuchUser(userList, login);
+    if (result===false) {
+        userList.push(newUserArray);
+        console.log(userList);
+        res.json({success:1, message:"Новый пользователь добавлен!"})
+        }
+    else {
+        res.json({success:2, message:"Такой логин занят!"})
+    }
+});
 
 
 app.listen(3000, function () {

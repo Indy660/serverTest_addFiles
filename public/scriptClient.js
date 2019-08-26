@@ -5,7 +5,7 @@ $("#enterButtonMain").click(function(event) {
         url: "/",   //путь
         type: "GET",   //Метод отправки
         success: function() {
-            window.location.assign("http://localhost:3000/enter")    //если запросо прошел успешно, то перезапускаем страницу через аякс
+            window.location.assign("http://localhost:3000/enter")    //если запрос прошел успешно, то перезапускаем страницу через аякс
         }
     });
 });
@@ -14,7 +14,7 @@ $("#enterButtonMain").click(function(event) {
 //для формы для входа
 $("#enterButton").click(function(event) {
     event.preventDefault();
-    const emailUser = $("#inputEmail").val();
+    const loginUser = $("#inputLogin").val();
     // $("#inputEmail").val("");
     const passwordUser = $("#inputPassword").val();
     // $("#inputPassword").val("");
@@ -22,12 +22,10 @@ $("#enterButton").click(function(event) {
         url: "/ajax/enter",   //путь
         type: "GET",   //Метод отправки
         data:{
-            email: emailUser,       //ключ:значение,потом все складывается с url
+            login: loginUser,       //ключ:значение,потом все складывается с url
             password: passwordUser  //ключ:значение,потом все складывается с url
         },
-
             success: function(data) {
-                // console.log('data', data)
                     // success: function(data){
                     // if (data==="200") {
                     //window.location.assign("http://localhost:3000")   //переход на главную страницу
@@ -46,11 +44,11 @@ $("#enterButton").click(function(event) {
 
 
 
-//добавление файла с содержанием
-$("#addText").click(function(event) {
+//добавление файла в папку
+$("#addFile").click(function(event) {
     event.preventDefault();
     const domain = $("#domain").val();
-    $("#addFiles").val("");
+    $("#domain").val("");
     const ip = $("#IP").val();
     $("#IP").val("");
     $.ajax({
@@ -61,14 +59,55 @@ $("#addText").click(function(event) {
             ip: ip           //ключ:значение,потом все складывается с url
         },
         success: function(){
-            window.location.reload()    //если запросо прошел успешно, то перезапускаем страницу через аякс
+            window.location.reload()    //если запрос прошел успешно, то перезапускаем страницу через аякс
         }
     });
 });
 
 
+
+//кнопка для перехода в админку
+$("#seeUsersButton").click(function(event) {
+    event.preventDefault();
+    $.ajax({
+        url: "/",   //путь
+        type: "GET",   //Метод отправки
+        success: function() {
+            window.location.assign("http://localhost:3000/users");    //если запрос прошел успешно, то перезапускаем страницу через аякс
+        }
+    });
+});
+
+//добавление пользователей в список
+$("#addNewUser").click(function(event) {
+    event.preventDefault();
+    const nameNewUser = $("#nameNewUser").val();
+    $("#nameNewUser").val("");
+    const loginNewUser = $("#loginNewUser").val();
+    $("#loginNewUser").val("");
+    const passwordNewUser = $("#passwordNewUser").val();
+    $("#passwordNewUser").val("");
+    $.ajax({
+        url: "/ajax/users",   //путь
+        type: "GET",   //Метод отправки
+        data:{
+            user: nameNewUser,
+            login: loginNewUser,
+            password: passwordNewUser
+        },
+        success: function(data) {
+            window.location.reload();
+            if (data.success){
+                alert(data.message);
+            }
+        }
+    });
+});
+
+
+
 //удалить файл
-$(".deleteItem").click(function(event) {
+$(".deleteFile").click(function(event) {
     event.preventDefault();
     const index = $(this).data('index');
     $.ajax({
@@ -78,7 +117,7 @@ $(".deleteItem").click(function(event) {
             delFile: index  //ключ:значение,потом все складывается с url
         },
         success: function(){
-            window.location.reload()   //если запросо прошел успешно, то перезапускаем страницу через аякс
+            window.location.reload()   //если запрос прошел успешно, то перезапускаем страницу через аякс
         }
     });
 });
