@@ -4,9 +4,10 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 app.set('views', __dirname + '/views');   //указывает путь к шаблонам
-app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');            //шаблонизатор, какое расширение
 app.use(express.static('public'));  //статичные объекты, в том числе и скрипт для клиента
 const url = require('url');
+
 
 const directory="C:\\Users\\User\\Desktop\\Работа\\serverTest_addFiles\\experimentFolder";
 
@@ -80,24 +81,12 @@ app.get('/enter', function (req, res) {
 });
 
 
-// const userList = { id: 1, name: 'Admin', login: 'Admin', password:"qwe"}
-// function threreIsSuchUser(list){
-//     for (let id in list) {
-//         alert(id)        // выводит ключи
-//     }
-// }
-
-// const userList = { id: 1, name: 'Admin', login: 'Admin', password:"qwe"}
-// function threreIsSuchUser(list){
-//     for (let id in list) {
-//         alert(list[id])        // выводит значения ключей
-//     }
-// }
-
 let userList = [
     { id: 1, name: 'Admin', login: 'Admin', password:"qwe"},
     { id: 2, name: 'TestUser', login: 'test', password:"123"},
-    { id: 3, name: 'Dima', login: 'DimaK', password:"12345"}
+    { id: 3, name: 'Dima', login: 'DimaK', password:"12345"},
+    { id: 4, name: 'Sacha', login: 'gundi5', password:"BF236BF"},
+    { id: 5, name: 'Дима', login: 'Indy660', password: '123' }
 ];
 
 function threreIsSuchUser(list, trueLogin) {
@@ -177,6 +166,48 @@ app.get('/ajax/users', function (req, res) {
     else {
         res.json({success:2, message:"Такой логин занят!"})
     }
+});
+
+
+//вспомогательная функция
+function sortSomething(thing, array) {
+    if (typeof(array[Object.keys(array)[0]][thing])==='number') {
+        array.sort(function (a, b) {
+            if (a[thing] < b[thing]) {
+                return b[thing] - a[thing]
+            } else {
+                return a[thing] - b[thing]
+            }
+        })
+    }
+    else if (array[Object.keys(array)[0]][thing]>array[Object.keys(array)[1]][thing]) {array.sort(function (a, b) {
+        if (a[thing] < b[thing]) {
+            return -1
+        } else {return 1}
+    })}
+    else if (array[Object.keys(array)[0]][thing]<array[Object.keys(array)[1]][thing]) {array.sort(function (a, b) {
+        if (a[thing] < b[thing]) {
+            return 1
+        } else {return -1}
+    })}
+}
+
+//  сортировка пользователей
+app.get('/sort', function(req, res) {
+    const whatSort = req.query.sort;
+    sortSomething(whatSort, userList);
+    res.send("200");
+});
+
+//удаление пользователей из списка
+app.get('/delete', function(req, res){
+    let login = req.query.deleteThisLogin;
+    console.log(login);
+    let index=threreIsSuchUser(userList, login).id-1;
+    console.log(index);
+    userList.splice(index,1);
+        res.send("200");        //выведем 200ок
+
 });
 
 

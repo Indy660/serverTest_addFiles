@@ -1,0 +1,30 @@
+doctype HTML
+HTML(lang="ru")
+    html
+        head
+            title= title
+
+            script(src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js")
+            script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous")
+            link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous")
+        body.block-content
+
+
+nav.navbar.navbar-expand-lg.navbar-dark.bg-primary.sticky-top
+    a.navbar-brand(href='/')
+        //- .h2.font-italic Addel
+        img(src="img/logo1.svg" width = "140" height="40")
+    button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
+        span.navbar-toggler-icon
+
+    #navbarSupportedContent.collapse.navbar-collapse
+        ul.h5.navbar-nav.mr-auto
+            li.nav-item.active
+                a.nav-link.boder-bottom(data-value='about' href='#') Главная
+
+            li.nav-item
+                a.nav-link(data-value='blog' href='#') Блог
+            li.nav-item
+                a.nav-link(data-value='team' href='#') О нас
+            li.nav-item
+                a.nav-link(data-value='contact' href='#') Контакты

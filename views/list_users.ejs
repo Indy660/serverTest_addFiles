@@ -4,46 +4,49 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
 <div>
     <table class="table table-bordered table-dark">
         <thead>
         <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Login</th>
-            <th scope="col">Password</th>
+            <th scope="col"><a><img src="img/sort.svg" width="25" height="25"
+                                    class="sortButton float-right" data-index="id"></a>ID</th>
+            <th scope="col"><a><img src="img/sort.svg" width="25" height="25"
+                                    class="sortButton float-right" data-index="name"></a>Name</th>
+            <th scope="col"><a><img src="img/sort.svg" width="25" height="25"
+                                    class="sortButton float-right" data-index="login"></a>Login</th>
+            <th scope="col"><a><img src="img/sort.svg" width="25" height="25"
+                                    class="sortButton float-right" data-index="password"></a>Password</th>
         </tr>
         </thead>
         <tbody>
 
-            <% for(let i in users) {%>
+        <% for(let i in users) { %>
         <tr>
-            <td ><%=users[i].id%></td>
-            <td  ><%=users[i].name %> </td>
-            <td  ><%=users[i].login %> </td>
-            <td  ><%=users[i].password %> </td>
+            <td><%= users[i].id %></td>
+            <td><%= users[i].name %> </td>
+            <td><%= users[i].login %> </td>
+            <td><%= users[i].password %> </td>
         </tr>
-            <%} %>
+        <% } %>
 
         </tbody>
     </table>
     <form>
         <div class="form-row align-items-center ">
             <div class="col-auto">
-                <label class="sr-only" for="nameNewUser">Name</label>
-                <input type="text" class="form-control mb-2" id="nameNewUser" placeholder="Имя пользователя" name="user">
+                <input type="text" class="form-control mb-2" id="nameNewUser" placeholder="Имя пользователя"
+                       name="user">
             </div>
             <div class="col-auto">
-                <label class="sr-only" for="loginNewUser">Username</label>
                 <div class="input-group mb-2">
                     <input type="text" class="form-control" id="loginNewUser" placeholder="Логин" name="login">
                 </div>
             </div>
             <div class="col-auto">
-                <label class="sr-only" for="passwordNewUser">Username</label>
                 <div class="input-group mb-2">
                     <input type="text" class="form-control" id="passwordNewUser" placeholder="Пароль" name="password">
                 </div>
@@ -54,12 +57,26 @@
             </div>
         </div>
     </form>
+
+    <form>
+        <div class="form-row align-items-center ">
+            <div class="col-auto">
+                <input type="text" class="form-control mb-2" id="nameToDeleteUser" placeholder="Логин пользователя"
+                       name="deleteThisLogin">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-danger mb-2" id="buttonToDeleteUser">Удалить пользователя</button>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script src="./scriptClient.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
 </body>
 </html>
-
-

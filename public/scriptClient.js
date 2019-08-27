@@ -124,6 +124,41 @@ $(".deleteFile").click(function(event) {
 
 
 
+//сортировка списка
+$(".sortButton").click(function(event) {
+    event.preventDefault();
+    const index = $(this).data('index');
+    $.ajax({
+        url: "/sort",   //путь
+        type: "GET",   //Метод отправки
+        data:{
+            sort: index  //ключ:значение,потом все складывается с url
+        },
+        success: function(){
+            window.location.reload()   //если запрос прошел успешно, то перезапускаем страницу через аякс
+        }
+    });
+});
+
+
+
+//удаления пользователя из списка
+$("#buttonToDeleteUser").click(function(event) {
+    event.preventDefault();
+    const loginUser = $("#nameToDeleteUser").val();
+    $("#nameToDeleteUser").val("");
+    $.ajax({
+        url: "/delete",   //путь
+        type: "GET",   //Метод отправки
+        data:{
+            deleteThisLogin: loginUser,  //ключ:значение,потом все складывается с url
+        },
+        success: function(){
+            window.location.reload()    //если запрос прошел успешно, то перезапускаем страницу через аякс
+        }
+    });
+});
+
 //старая функция добавления файлов
 // $("#pushButton").click(function(event) {
 //     event.preventDefault();
