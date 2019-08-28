@@ -8,7 +8,10 @@
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-<div>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <button id="enterButtonMain" class=" btn btn-info my-2 my-sm-0 align-text-bottom float-right" type="submit">Войти</button>
+</nav>
+<div  class="container py-5 text-center">
     <table class="table table-bordered table-dark">
         <thead>
         <tr>
@@ -29,7 +32,10 @@
             <td><%= users[i].id %></td>
             <td><%= users[i].name %> </td>
             <td><%= users[i].login %> </td>
-            <td><%= users[i].password %> </td>
+            <td><%= users[i].password %><a><img src="img/cancel.svg" width="25" height="25"
+                                                class="buttonToDeleteUser float-right"
+                                                data-index="<%= users[i].login%>"></a> </td>
+
         </tr>
         <% } %>
 
@@ -65,12 +71,16 @@
                        name="deleteThisLogin">
             </div>
             <div class="col-auto">
-                <button type="submit" class="btn btn-danger mb-2" id="buttonToDeleteUser">Удалить пользователя</button>
+                <button type="submit" class="buttonToDeleteUser btn btn-danger mb-2">Удалить пользователя</button>
             </div>
         </div>
     </form>
 </div>
-
+<footer class="page-footer font-small blue">
+    <div class="footer-copyright text-center py-3">© 2019 Copyright:
+        <a href="https://mdbootstrap.com/education/bootstrap/"> MDBootstrap.com</a>
+    </div>
+</footer>
 <script src="./scriptClient.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"

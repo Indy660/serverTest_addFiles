@@ -81,6 +81,7 @@ app.get('/enter', function (req, res) {
 });
 
 
+
 let userList = [
     { id: 1, name: 'Admin', login: 'Admin', password:"qwe"},
     { id: 2, name: 'TestUser', login: 'test', password:"123"},
@@ -169,27 +170,49 @@ app.get('/ajax/users', function (req, res) {
 });
 
 
-//вспомогательная функция
+// //вспомогательная функция для сортировки
+// function sortSomething(thing, array) {
+//     if (typeof(array[Object.keys(array)[0]][thing])==='number') {
+//         array.sort(function (a, b) {
+//             if (a[thing] < b[thing]) {
+//                 return b[thing] - a[thing]
+//             } else {
+//                 return a[thing] - b[thing]
+//             }
+//         })
+//     }
+//     else if (array[Object.keys(array)[0]][thing] > array[Object.keys(array)[1]][thing]) {
+//         array.sort(function (a, b) {
+//             if (a[thing] < b[thing]) {
+//                 return -1
+//             } else {return 1}
+//         })
+//     }
+//     else if (array[Object.keys(array)[0]][thing] < array[Object.keys(array)[1]][thing]) {
+//         array.sort(function (a, b) {
+//             if (a[thing] < b[thing]) {
+//                 return 1
+//             } else {return -1}
+//         })
+//     }
+// }
+
+//вспомогательная функция для сортировки
 function sortSomething(thing, array) {
-    if (typeof(array[Object.keys(array)[0]][thing])==='number') {
+    if (array[Object.keys(array)[0]][thing] > array[Object.keys(array)[1]][thing]) {
         array.sort(function (a, b) {
             if (a[thing] < b[thing]) {
-                return b[thing] - a[thing]
-            } else {
-                return a[thing] - b[thing]
-            }
+                return -1
+            } else {return 1}
         })
     }
-    else if (array[Object.keys(array)[0]][thing]>array[Object.keys(array)[1]][thing]) {array.sort(function (a, b) {
-        if (a[thing] < b[thing]) {
-            return -1
-        } else {return 1}
-    })}
-    else if (array[Object.keys(array)[0]][thing]<array[Object.keys(array)[1]][thing]) {array.sort(function (a, b) {
-        if (a[thing] < b[thing]) {
-            return 1
-        } else {return -1}
-    })}
+    else if (array[Object.keys(array)[0]][thing] < array[Object.keys(array)[1]][thing]) {
+        array.sort(function (a, b) {
+            if (a[thing] < b[thing]) {
+                return 1
+            } else {return -1}
+        })
+    }
 }
 
 //  сортировка пользователей
@@ -199,15 +222,25 @@ app.get('/sort', function(req, res) {
     res.send("200");
 });
 
+
+
 //удаление пользователей из списка
 app.get('/delete', function(req, res){
-    let login = req.query.deleteThisLogin;
-    console.log(login);
-    let index=threreIsSuchUser(userList, login).id-1;
-    console.log(index);
-    userList.splice(index,1);
-        res.send("200");        //выведем 200ок
-
+    let login = req.query.deleteThisLogin || req.query.deleteThisString;
+    let userData=threreIsSuchUser(userList, login);
+    // console.log(login);
+    // console.log(userData);
+    if (Boolean(userData)) {
+        let userIndexReal=userList.indexOf(userData);
+        // console.log(userIndexNow);
+        userList.splice(userIndexReal, 1);
+        let alertGood="Пользователь удален!";
+        res.json ({success:1, message:alertGood })
+    }
+    else {
+        let alertBad="Такого пользователя не существует, проверьте правильность написания логина.";
+        res.json ({success:2, message:alertBad })
+    }
 });
 
 
