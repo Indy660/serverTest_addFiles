@@ -15,14 +15,14 @@
     <table class="table table-bordered table-dark">
         <thead>
         <tr>
-            <th scope="col"><a><img src="img/sort.svg" width="25" height="25"
+            <th scope="col"><a href="/users?sort=id&k=<%= nextDirection %>"><img src="img/sort.svg" width="25" height="25"
                                     class="sortButton float-right" data-index="id"></a>ID</th>
-            <th scope="col"><a><img src="img/sort.svg" width="25" height="25"
-                                    class="sortButton float-right" data-index="name"></a>Name</th>
-            <th scope="col"><a><img src="img/sort.svg" width="25" height="25"
-                                    class="sortButton float-right" data-index="login"></a>Login</th>
-            <th scope="col"><a><img src="img/sort.svg" width="25" height="25"
-                                    class="sortButton float-right" data-index="password"></a>Password</th>
+            <th scope="col"><a href="/users?sort=name&k=<%= nextDirection %>"><img src="img/sort.svg" width="25" height="25"
+                                    class="sortButton float-right" data-index="name"></a>Имя</th>
+            <th scope="col"><a href="/users?sort=login&k=<%= nextDirection %>"><img src="img/sort.svg" width="25" height="25"
+                                    class="sortButton float-right" data-index="login"></a>Логин</th>
+            <th scope="col"><a href="/users?sort=password&k=<%= nextDirection %>"><img src="img/sort.svg" width="25" height="25"
+                                    class="sortButton float-right" data-index="password"></a>Пароль</th>
         </tr>
         </thead>
         <tbody>

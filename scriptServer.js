@@ -147,9 +147,9 @@ app.get('/ajax/enter', function (req, res) {
 
 
 //страница вывода таблицы пользователей
-app.get('/users', function (req, res) {
-    res.render('list_users', {users: userList} );
-});
+// app.get('/users', function (req, res) {
+//     res.render('list_users', {users: userList} );
+// });
 
 
 //страница со списком всех пользователей
@@ -170,7 +170,7 @@ app.get('/ajax/users', function (req, res) {
 });
 
 
-// //вспомогательная функция для сортировки
+// //вспомогательная функция для сортировки, но громоздкая
 // function sortSomething(thing, array) {
 //     if (typeof(array[Object.keys(array)[0]][thing])==='number') {
 //         array.sort(function (a, b) {
@@ -197,30 +197,35 @@ app.get('/ajax/users', function (req, res) {
 //     }
 // }
 
-//вспомогательная функция для сортировки
-function sortSomething(thing, array) {
-    if (array[Object.keys(array)[0]][thing] > array[Object.keys(array)[1]][thing]) {
-        array.sort(function (a, b) {
-            if (a[thing] < b[thing]) {
-                return -1
-            } else {return 1}
-        })
-    }
-    else if (array[Object.keys(array)[0]][thing] < array[Object.keys(array)[1]][thing]) {
-        array.sort(function (a, b) {
-            if (a[thing] < b[thing]) {
-                return 1
-            } else {return -1}
-        })
-    }
+// //  сортировка пользователей, работала с клиентской частью
+// app.get('/sort', function(req, res) {
+//     const whatSort = req.query.sort;
+//     sortSomething(whatSort, userList);
+//     res.send("200");
+// });
+//
+//
+
+//вспомогательная функция для сортировки, усовершенствованная
+function sortSomething(thing, array, k) {
+    array.sort(function (a, b) {
+        if (a[thing] < b[thing]) {
+            return -1*k
+        } else {return k}
+    })
+
 }
 
-//  сортировка пользователей
-app.get('/sort', function(req, res) {
+ //  сортировка пользователей, работает только с html и href запросами
+app.get('/users', function(req, res) {
     const whatSort = req.query.sort;
-    sortSomething(whatSort, userList);
-    res.send("200");
+    let directionSort= Number(req.query.k || 1);
+    if (Boolean(whatSort)) {
+        sortSomething(whatSort, userList, directionSort)
+    }
+        res.render('list_users', {users: userList, nextDirection: -1*directionSort} );
 });
+
 
 
 

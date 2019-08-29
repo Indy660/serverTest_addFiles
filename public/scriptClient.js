@@ -32,7 +32,7 @@ $("#enterButton").click(function(event) {
                     // }    else {alert("Вы ввели неправильный логин или пароль!")}
                     // console.log(emailUser,passwordUser)}
                 if(data.success==1) {
-                    $("#resultServer").html($("#resultServer").text() + "<br> Вы вошли как" + data.name + "<br>" + data.user);
+                    $("#resultServer").html($("#resultServer").text() + "<br> Вы вошли как " + data.name + "<br>" + data.user);
                     //html-заменяем текст, text-берет значение в тэге
                     setTimeout(function(){
                         window.location.assign("http://localhost:3000")
@@ -127,21 +127,21 @@ $("#addNewUser").click(function(event) {
 
 
 
-//сортировка списка
-$(".sortButton").click(function(event) {
-    event.preventDefault();
-    const index = $(this).data('index');
-    $.ajax({
-        url: "/sort",   //путь
-        type: "GET",   //Метод отправки
-        data:{
-            sort: index  //ключ:значение,потом все складывается с url
-        },
-        success: function(){
-            window.location.reload()   //если запрос прошел успешно, то перезапускаем страницу через аякс
-        }
-    });
-});
+//сортировка списка     //сортировка работала, но теперь реализована без клиентской части
+// $(".sortButton").click(function(event) {
+//     event.preventDefault();
+//     const index = $(this).data('index');
+//     $.ajax({
+//         url: "/sort",   //путь
+//         type: "GET",   //Метод отправки
+//         data:{
+//             sort: index  //ключ:значение,потом все складывается с url
+//         },
+//         success: function(){
+//             window.location.reload()   //если запрос прошел успешно, то перезапускаем страницу через аякс
+//         }
+//     });
+// });
 
 
 
