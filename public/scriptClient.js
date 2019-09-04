@@ -13,7 +13,7 @@ $("#enterButtonMain").click(function(event) {
 
 //для формы для входа
 $("#enterButton").click(function(event) {
-    event.preventDefault();
+    event.preventDefault(); // предотвращаем штатное действие, то есть переход по ссылке
     const loginUser = $("#inputLogin").val();
     // $("#inputEmail").val("");
     const passwordUser = $("#inputPassword").val();

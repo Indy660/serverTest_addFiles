@@ -7,7 +7,9 @@ app.set('views', __dirname + '/views');   //указывает путь к ша�
 app.set('view engine', 'ejs');            //шаблонизатор, какое расширение
 app.use(express.static('public'));  //статичные объекты, в том числе и скрипт для клиента
 const url = require('url');
-
+const cors=require('cors');
+app.use(cors());
+// Access-Control-Allow-Origin *
 
 const directory="C:\\Users\\User\\Desktop\\Работа\\serverTest_addFiles\\experimentFolder";
 
@@ -104,7 +106,7 @@ app.get('/ajax/enter', function (req, res) {
     let login = req.query.login;
     let password = req.query.password;
     const result=threreIsSuchUser(userList, login);
-    if (result && password===result.password) {        //email как-будто равен логину
+    if (result && password===result.password) {
         const out = {
             success: 1,
             name: result.name,
@@ -152,7 +154,7 @@ app.get('/ajax/enter', function (req, res) {
 // });
 
 
-//страница со списком всех пользователей
+//страница с добавлением пользователя
 app.get('/ajax/users', function (req, res) {
     let user = req.query.user;
     let login = req.query.login;
@@ -245,6 +247,54 @@ app.get('/delete', function(req, res){
     else {
         let alertBad="Такого пользователя не существует, проверьте правильность написания логина.";
         res.json ({success:2, message:alertBad })
+    }
+});
+
+//страница json массива
+app.get('/ajax/users.json', function (req, res) {
+    res.json(userList);
+});
+
+function threreIsSuchId(list, trueId) {
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].id === trueId) {
+            return list[i]
+        }
+    }
+    return false
+}
+
+
+//удаление пользователей из списка json
+app.get('/ajax/users.json/delete', function(req, res) {
+    let index = Number(req.query.id);
+    let userData=threreIsSuchId(userList, index);
+    if (Boolean(userData)) {
+        let userIndexReal=userList.indexOf(userData);
+        userList.splice(userIndexReal, 1);
+        res.json(userList);
+    }
+    else {
+        console.log("Нет такого пользователя!");
+        res.json(userList);
+    }
+});
+
+
+//добавление пользователей в список json
+app.get('/ajax/users.json/addUser', function(req, res) {
+    let name = req.query.name;
+    let login = req.query.login;
+    let password = req.query.password;
+    const newUserArray={id:userList.length+1, name:name,  login: login, password:password};
+    let result=threreIsSuchUser(userList, login);
+    if (result===false) {
+        userList.push(newUserArray);
+        res.json(userList);
+    }
+    else {
+        console.log("Нет такого пользователя!");
+        res.json(userList);
     }
 });
 
