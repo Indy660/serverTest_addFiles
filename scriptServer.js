@@ -3,13 +3,15 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const app = express();
-app.set('views', __dirname + '/views');   //указывает путь к шаблонам
-app.set('view engine', 'ejs');            //шаблонизатор, какое расширение
-app.use(express.static('public'));  //статичные объекты, в том числе и скрипт для клиента
+    app.set('views', __dirname + '/views');   //указывает путь к шаблонам
+    app.set('view engine', 'ejs');            //шаблонизатор, какое расширение
+    app.use(express.static('public'));  //статичные объекты, в том числе и скрипт для клиента
 const url = require('url');
 const cors=require('cors');
-app.use(cors());
-// Access-Control-Allow-Origin *
+    app.use(cors());
+const bodyParser = require('body-parser');   //для пост запросов
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
 
 const directory="C:\\Users\\User\\Desktop\\Работа\\serverTest_addFiles\\experimentFolder";
 
@@ -91,6 +93,7 @@ let userList = [
     { id: 4, name: 'Sacha', login: 'gundi5', password:"BF236BF"},
     { id: 5, name: 'Дима', login: 'Indy660', password: '123' }
 ];
+let beginLengthArray=userList.length
 
 function threreIsSuchUser(list, trueLogin) {
     for (let i = 0; i < list.length; i++) {
@@ -154,22 +157,22 @@ app.get('/ajax/enter', function (req, res) {
 // });
 
 
-//страница с добавлением пользователя
-app.get('/ajax/users', function (req, res) {
-    let user = req.query.user;
-    let login = req.query.login;
-    let password = req.query.password;
-    const newUserArray={id:userList.length+1, name:user,  login: login, password:password};
-    let result=threreIsSuchUser(userList, login);
-    if (result===false) {
-        userList.push(newUserArray);
-        console.log(userList);
-        res.json({success:1, message:"Новый пользователь добавлен!"})
-        }
-    else {
-        res.json({success:2, message:"Такой логин занят!"})
-    }
-});
+//страница с добавлением пользователя (после vue не нужна)
+// app.get('/ajax/users', function (req, res) {
+//     let user = req.query.user;
+//     let login = req.query.login;
+//     let password = req.query.password;
+//     const newUserArray={id:++beginLengthArray, name:user,  login: login, password:password};
+//     let result=threreIsSuchUser(userList, login);
+//     if (result===false) {
+//         userList.push(newUserArray);
+//         console.log(userList);
+//         res.json({success:1, message:"Новый пользователь добавлен!"})
+//         }
+//     else {
+//         res.json({success:2, message:"Такой логин занят!"})
+//     }
+// });
 
 
 // //вспомогательная функция для сортировки, но громоздкая
@@ -208,47 +211,46 @@ app.get('/ajax/users', function (req, res) {
 //
 //
 
-//вспомогательная функция для сортировки, усовершенствованная
-function sortSomething(thing, array, k) {
-    array.sort(function (a, b) {
-        if (a[thing] < b[thing]) {
-            return -1*k
-        } else {return k}
-    })
+//вспомогательная функция для сортировки, усовершенствованная (после vue не нужна)
+// function sortSomething(thing, array, k) {
+//     array.sort(function (a, b) {
+//         if (a[thing] < b[thing]) {
+//             return -1*k
+//         } else {return k}
+//     })
+// }
 
-}
-
- //  сортировка пользователей, работает только с html и href запросами
-app.get('/users', function(req, res) {
-    const whatSort = req.query.sort;
-    let directionSort= Number(req.query.k || 1);
-    if (Boolean(whatSort)) {
-        sortSomething(whatSort, userList, directionSort)
-    }
-        res.render('list_users', {users: userList, nextDirection: -1*directionSort} );
-});
-
+//  //  сортировка пользователей, работает только с html и href запросами (после vue не нужна)
+// app.get('/users', function(req, res) {
+//     const whatSort = req.query.sort;
+//     let directionSort= Number(req.query.k || 1);
+//     if (Boolean(whatSort)) {
+//         sortSomething(whatSort, userList, directionSort)
+//     }
+//         res.render('list_users', {users: userList, nextDirection: -1*directionSort} );
+// });
 
 
 
-//удаление пользователей из списка
-app.get('/delete', function(req, res){
-    let login = req.query.deleteThisLogin || req.query.deleteThisString;
-    let userData=threreIsSuchUser(userList, login);
-    // console.log(login);
-    // console.log(userData);
-    if (Boolean(userData)) {
-        let userIndexReal=userList.indexOf(userData);
-        // console.log(userIndexNow);
-        userList.splice(userIndexReal, 1);
-        let alertGood="Пользователь удален!";
-        res.json ({success:1, message:alertGood })
-    }
-    else {
-        let alertBad="Такого пользователя не существует, проверьте правильность написания логина.";
-        res.json ({success:2, message:alertBad })
-    }
-});
+
+// //удаление пользователей из списка (после vue не нужна)
+// app.get('/delete', function(req, res){
+//     let login = req.query.deleteThisLogin || req.query.deleteThisString;
+//     let userData=threreIsSuchUser(userList, login);
+//     // console.log(login);
+//     // console.log(userData);
+//     if (Boolean(userData)) {
+//         let userIndexReal=userList.indexOf(userData);
+//         // console.log(userIndexNow);
+//         userList.splice(userIndexReal, 1);
+//         let alertGood="Пользователь удален!";
+//         res.json ({success:1, message:alertGood })
+//     }
+//     else {
+//         let alertBad="Такого пользователя не существует, проверьте правильность написания логина.";
+//         res.json ({success:2, message:alertBad })
+//     }
+// });
 
 //страница json массива
 app.get('/ajax/users.json', function (req, res) {
@@ -269,34 +271,43 @@ function threreIsSuchId(list, trueId) {
 app.get('/ajax/users.json/delete', function(req, res) {
     let index = Number(req.query.id);
     let userData=threreIsSuchId(userList, index);
-    if (Boolean(userData)) {
-        let userIndexReal=userList.indexOf(userData);
-        userList.splice(userIndexReal, 1);
-        res.json(userList);
-    }
-    else {
-        console.log("Нет такого пользователя!");
-        res.json(userList);
-    }
+    let userIndexReal=userList.indexOf(userData);
+    userList.splice(userIndexReal, 1);
+    res.json({
+        user_id: userData.id
+    });
+    // let userData=threreIsSuchId(userList, index);
+    // if (Boolean(userData)) {
+    //     let userIndexReal=userList.indexOf(userData);
+    //     userList.splice(userIndexReal, 1);
+    //     res.json(userList);
+    // }
+    // else {
+    //     console.log("Нет такого пользователя!");
+    //     res.json(userList);
+    // }
 });
 
 
 //добавление пользователей в список json
-app.get('/ajax/users.json/addUser', function(req, res) {
-    let name = req.query.name;
-    let login = req.query.login;
-    let password = req.query.password;
-    const newUserArray={id:userList.length+1, name:name,  login: login, password:password};
-    let result=threreIsSuchUser(userList, login);
-    if (result===false) {
+app.post('/ajax/users.json/addUser', function(req, res) {
+    let name = req.body.name;
+    let login = req.body.login;
+    let password = req.body.password;
+    if (threreIsSuchUser(userList, login)===false) {
+        const newUserArray = {id: ++beginLengthArray, name: name, login: login, password: password};
         userList.push(newUserArray);
-        res.json(userList);
+        res.json({
+            user_id: newUserArray.id
+        });
     }
     else {
-        console.log("Нет такого пользователя!");
-        res.json(userList);
+        res.json({
+            message:console.log("Такой пользователь уже есть")
+        })
     }
 });
+
 
 
 app.listen(3000, function () {
