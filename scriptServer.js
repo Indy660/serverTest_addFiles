@@ -1,24 +1,17 @@
 //Подключение модулей
 const express = require('express');
 const app = express();
-const path = require('path');
-const fs = require('fs');
-    app.set('views', __dirname + '/views');   //указывает путь к шаблонам
-    app.set('view engine', 'ejs');            //шаблонизатор, какое расширение
-    app.use(express.static('public'));  //статичные объекты, в том числе и скрипт для клиента
-const url = require('url');
 const cors=require('cors');
     app.use(cors());
 const bodyParser = require('body-parser');   //для пост запросов
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
 const createError = require('http-errors');
+const jwt = require('jsonwebtoken');
 
-const directory="C:\\Users\\User\\Desktop\\Работа\\serverTest_addFiles\\experimentFolder";
+let secretWord="Lox";
 
 
-//добовляет файлы которые на компьютере для загрузки если они имеются
-app.use(express.static(path.join(__dirname, 'public')));
 
 let userList = [
     { id: 1, name: 'Admin', login: 'Admin', password:"qwe"},
@@ -111,12 +104,37 @@ app.post('/ajax/users.json/addUser', function(req, res, next) {
         });
     }
     else {
-        //???????????????????????????????????
+            return next(createError(400, 'Такой логин уже занят'))
+        }
+
+});
+
+app.post('/ajax/users.json/checkuser', function(req, res, next) {
+    let nameUser = req.body.login;
+    let passwordUser = req.body.password;
+    let checkingUser=threreIsSuchUser(userList, nameUser);
+    // console.log("nameUser:"+ nameUser+ "passwordUser:"+ passwordUser+ "checkingUser:"+ checkingUser)
+    // console.log(checkingUser.password)
+    if (checkingUser.password === passwordUser) {
+        let token = jwt.sign({ login: nameUser, id:checkingUser.id }, secretWord);
         res.json({
-            message:console.log("Такой пользователь уже есть")
-        })
+            token:token,
+            user_id: checkingUser.id,
+            user_login: checkingUser.login,
+            user_name: checkingUser.name
+        });
+    }
+    else {
+        return next(createError(400, 'Вы ввели неправильные данные для входа'))
     }
 });
+
+//привратный ключ
+//хэширование
+//токен
+//подпись (токен)
+
+//из ответа джсон токен сохранить в cookies или localstorage
 
 
 app.use(function(req, res, next) {

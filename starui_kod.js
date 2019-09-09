@@ -43,6 +43,15 @@
 
 
 // ____________________JS  ____________________
+const fs = require('fs');
+app.set('views', __dirname + '/views');   //указывает путь к шаблонам
+app.set('view engine', 'ejs');            //шаблонизатор, какое расширение
+app.use(express.static('public'));  //статичные объекты, в том числе и скрипт для клиента
+const url = require('url');
+const path = require('path');
+//добовляет файлы которые на компьютере для загрузки если они имеются
+app.use(express.static(path.join(__dirname, 'public')));
+const directory="C:\\Users\\User\\Desktop\\Работа\\serverTest_addFiles\\experimentFolder";
 
 
 //вспомогательная функция для перезаписи файлов
