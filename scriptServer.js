@@ -50,64 +50,11 @@ function deleteUserById(id, array){
     userList.splice(userIndexReal, 1);
 }
 
-//страница проверки данных для входа
-app.get('/ajax/enter', function (req, res) {
-    let login = req.query.login;
-    let password = req.query.password;
-    const result=threreIsSuchUser(userList, login);
-    if (result && password===result.password) {
-        const out = {
-            success: 1,
-            name: result.name,
-            user: result.id
-        };
-        res.json(out)            //отправляю json формат на клиент
-        //res.type('json')       //тоже самое
-        //res.send(JSON.stringify(out)) //тоже самое
-    }
-    else if (result&&password!==result.password) {
-        let message="Вы ввели неправильно пароль!";
-        res.json({success:0, message})           //отправляю json формат на клиент
-    }
-    else {
-        //???????????????????????????????????
-        let message="Такого пользователя не существует!";
-        res.json({success:0, message})
-    }
- });
-
-//страница json массива
-app.get('/ajax/users.json', function (req, res) {
-    res.json(userList);
-});
 
 
-//удаление пользователей из списка json
-app.post('/ajax/users.json/delete', function(req, res, next) {
-    deleteUserById(req.body.id, userList);
-    res.json({
-        user_id: req.body.id
-    });
-});
 
 
-//добавление пользователей в список json
-app.post('/ajax/users.json/addUser', function(req, res, next) {
-    let name = req.body.name;
-    let login = req.body.login;
-    let password = req.body.password;
-    if (threreIsSuchUser(userList, login)===false) {
-        const newUserArray = {id: ++beginLengthArray, name: name, login: login, password: password};
-        userList.push(newUserArray);
-        res.json({
-            user_id: newUserArray.id
-        });
-    }
-    else {
-            return next(createError(400, 'Такой логин уже занят'))
-        }
 
-});
 
 app.post('/ajax/users.json/checkuser', function(req, res, next) {
     let nameUser = req.body.login;
@@ -129,12 +76,74 @@ app.post('/ajax/users.json/checkuser', function(req, res, next) {
     }
 });
 
-//привратный ключ
-//хэширование
-//токен
-//подпись (токен)
 
-//из ответа джсон токен сохранить в cookies или localstorage
+app.use(function(req, res, next) {
+    let token=req.query.token||req.body.token;
+    if (Boolean(token)===false) {
+    return next(createError(404, 'Такого токена не существует'))
+    }
+    else {
+        next()
+    }
+});
+
+
+
+//страница json массива
+app.get('/ajax/users.json', function (req, res) {
+    res.json(userList);
+});
+
+
+
+
+//
+//
+// app.use(function(req, res, next) {
+//     if (!token) { // приводим к булевному значению (то что токена не существует)
+//         return next(createError(412, 'Токен не сушествует'))
+//     }
+//     let decoded = jwt.verify(token, MY_SECRET); // расшифруем токен
+//     if (!decoded) {
+//         return next(createError(416, 'Токен не валиден'))
+//     } else next()
+//
+// });
+
+//удаление пользователей из списка json
+app.post('/ajax/users.json/delete', function(req, res, next) {
+    let decoded = jwt.verify(req.body.token, secretWord);
+    // console.log(req.body.token);
+    // console.log(decoded)
+    if (decoded) {
+        deleteUserById(req.body.id, userList);
+        res.json({
+            user_id: req.body.id
+        });
+    }
+});
+
+
+
+//добавление пользователей в список json
+app.post('/ajax/users.json/addUser', function(req, res, next) {
+    let name = req.body.name;
+    let login = req.body.login;
+    let password = req.body.password;
+    if (threreIsSuchUser(userList, login)===false) {
+        const newUserArray = {id: ++beginLengthArray, name: name, login: login, password: password};
+        userList.push(newUserArray);
+        res.json({
+            user_id: newUserArray.id
+        });
+    }
+    else {
+            return next(createError(400, 'Такой логин уже занят'))
+        }
+
+});
+
+
 
 
 app.use(function(req, res, next) {
