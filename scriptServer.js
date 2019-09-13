@@ -9,6 +9,9 @@ app.use(bodyParser.json());
 const createError = require('http-errors');
 const jwt = require('jsonwebtoken');
 
+const fs = require('fs');
+let directory="C:\\Users\\User\\Desktop\\Работа\\vue_cli_table\\experimentFolder";
+
 let secretWord="Lox";
 
 
@@ -60,15 +63,13 @@ app.post('/ajax/users.json/checkuser', function(req, res, next) {
     let nameUser = req.body.login;
     let passwordUser = req.body.password;
     let checkingUser=threreIsSuchUser(userList, nameUser);
-    // console.log("nameUser:"+ nameUser+ "passwordUser:"+ passwordUser+ "checkingUser:"+ checkingUser)
-    // console.log(checkingUser.password)
     if (checkingUser.password === passwordUser) {
         let token = jwt.sign({ login: nameUser, id:checkingUser.id }, secretWord);
         res.json({
             token:token,
             user_id: checkingUser.id,
             user_login: checkingUser.login,
-            user_name: checkingUser.name
+            user_name: checkingUser.name,
         });
     }
     else {
@@ -77,10 +78,16 @@ app.post('/ajax/users.json/checkuser', function(req, res, next) {
 });
 
 
-app.use(function(req, res, next) {
-    let token=req.query.token||req.body.token;
-    if (Boolean(token)===false) {
-        return next(createError(404, 'Такого токена не существует'))
+app.use(function(req, res, next) {      ///обрабатывает все запросы, где нету правильной авторизации
+   let pretoken=req.headers.authorization;
+   if (Boolean(pretoken) === false) {
+       return next(createError(404, 'Такого токена не существует'))
+   }
+    let trueToken=pretoken.split(" ")[1];
+    let decoded = jwt.verify(trueToken, secretWord);
+    console.log(decoded)
+    if (!decoded) {
+        return next(createError(404, 'Токен не валидный!'))
     }
     else {
         next()
@@ -129,6 +136,15 @@ app.post('/ajax/users.json/addUser', function(req, res, next) {
 });
 
 
+// app.get('/ajax/users.json/files', function (req, res) {
+//     const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
+//     const filesWithoutEnd=files.map(function(elem) {  //второй способ
+//         return path.basename(elem, path.extname(elem))
+//     });
+//     res.render('home', {value: filesWithoutEnd});  //генерация страниц 1-ый параметр шаблон
+// });
+
+
 
 
 app.use(function(req, res, next) {
@@ -136,7 +152,7 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(err, req, res, next) {
-    res.status(err.statusCode);
+    res.status(err.statusCode || 500);
     res.json({
         success: 0,
         error:err,
