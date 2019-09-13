@@ -74,6 +74,33 @@ app.get('/addDomain', function(req, res){
     });
 });
 
+//страница проверки данных для входа
+app.get('/ajax/enter', function (req, res) {
+    let login = req.query.login;
+    let password = req.query.password;
+    const result=threreIsSuchUser(userList, login);
+    if (result && password===result.password) {
+        const out = {
+            success: 1,
+            name: result.name,
+            user: result.id
+        };
+        res.json(out)            //отправляю json формат на клиент
+        //res.type('json')       //тоже самое
+        //res.send(JSON.stringify(out)) //тоже самое
+    }
+    else if (result&&password!==result.password) {
+        let message="Вы ввели неправильно пароль!";
+        res.json({success:0, message})           //отправляю json формат на клиент
+    }
+    else {
+        //???????????????????????????????????
+        let message="Такого пользователя не существует!";
+        res.json({success:0, message})
+    }
+});
+
+
 //Главная страница
 app.get('/', function (req, res) {
     const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
@@ -108,33 +135,6 @@ app.get('/search', function(req, res){
         else {return false}
     });
     res.render('home', { value: searchFiles});  //генерация страниц 1-ый параметр шаблон
-});
-
-
-//страница проверки данных для входа
-app.get('/ajax/enter', function (req, res) {
-    let login = req.query.login;
-    let password = req.query.password;
-    const result=threreIsSuchUser(userList, login);
-    if (result && password===result.password) {
-        const out = {
-            success: 1,
-            name: result.name,
-            user: result.id
-        };
-        res.json(out)            //отправляю json формат на клиент
-        //res.type('json')       //тоже самое
-        //res.send(JSON.stringify(out)) //тоже самое
-    }
-    else if (result&&password!==result.password) {
-        let message="Вы ввели неправильно пароль!";
-        res.json({success:0, message})           //отправляю json формат на клиент
-    }
-    else {
-        //???????????????????????????????????
-        let message="Такого пользователя не существует!";
-        res.json({success:0, message})
-    }
 });
 
 
