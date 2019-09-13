@@ -111,6 +111,33 @@ app.get('/search', function(req, res){
 });
 
 
+//страница проверки данных для входа
+app.get('/ajax/enter', function (req, res) {
+    let login = req.query.login;
+    let password = req.query.password;
+    const result=threreIsSuchUser(userList, login);
+    if (result && password===result.password) {
+        const out = {
+            success: 1,
+            name: result.name,
+            user: result.id
+        };
+        res.json(out)            //отправляю json формат на клиент
+        //res.type('json')       //тоже самое
+        //res.send(JSON.stringify(out)) //тоже самое
+    }
+    else if (result&&password!==result.password) {
+        let message="Вы ввели неправильно пароль!";
+        res.json({success:0, message})           //отправляю json формат на клиент
+    }
+    else {
+        //???????????????????????????????????
+        let message="Такого пользователя не существует!";
+        res.json({success:0, message})
+    }
+});
+
+
 //страница входа
 app.get('/enter', function (req, res) {
     res.render('enter');

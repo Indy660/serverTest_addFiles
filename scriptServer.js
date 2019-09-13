@@ -50,41 +50,22 @@ function deleteUserById(id, array){
     userList.splice(userIndexReal, 1);
 }
 
-//страница проверки данных для входа
-app.get('/ajax/enter', function (req, res) {
-    let login = req.query.login;
-    let password = req.query.password;
-    const result=threreIsSuchUser(userList, login);
-    if (result && password===result.password) {
-        const out = {
-            success: 1,
-            name: result.name,
-            user: result.id
-        };
-        res.json(out)            //отправляю json формат на клиент
-        //res.type('json')       //тоже самое
-        //res.send(JSON.stringify(out)) //тоже самое
-    }
-    else if (result&&password!==result.password) {
-        let message="Вы ввели неправильно пароль!";
-        res.json({success:0, message})           //отправляю json формат на клиент
-    }
-    else {
-        //???????????????????????????????????
-        let message="Такого пользователя не существует!";
-        res.json({success:0, message})
-    }
- });
+
 
 //страница json массива
 app.get('/ajax/users.json', function (req, res) {
-    res.json(userList);
+     let token = jwt.sign({ users: userList}, secretWord);
+    res.json(
+        userList
+
+    );
 });
 
 
 //удаление пользователей из списка json
 app.post('/ajax/users.json/delete', function(req, res, next) {
     deleteUserById(req.body.id, userList);
+    let token = jwt.sign({ users: req.body.id}, secretWord);
     res.json({
         user_id: req.body.id
     });
