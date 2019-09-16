@@ -10,6 +10,7 @@ const createError = require('http-errors');
 const jwt = require('jsonwebtoken');
 
 const fs = require('fs');
+const path = require('path');
 let directory="C:\\Users\\User\\Desktop\\Работа\\vue_cli_table\\experimentFolder";
 
 let secretWord="Lox";
@@ -18,9 +19,9 @@ let secretWord="Lox";
 
 let userList = [
     { id: 1, name: 'Admin', login: 'Admin', password:"qwe"},
-    { id: 2, name: 'TestUser', login: 'test', password:"123"},
-    { id: 3, name: 'Dima', login: 'DimaK', password:"12345"},
-    { id: 4, name: 'Sacha', login: 'gundi5', password:"BF236BF"},
+    { id: 2, name: 'Вика', login: 'test', password:"123"},
+    { id: 3, name: 'Лёня', login: 'DimaK', password:"12345"},
+    { id: 4, name: 'Саша', login: 'gundi5', password:"BF236BF"},
     { id: 5, name: 'Дима', login: 'Indy660', password: '123' }
 ];
 let beginLengthArray=userList.length;
@@ -85,7 +86,7 @@ app.use(function(req, res, next) {      ///обрабатывает все за�
    }
     let trueToken=pretoken.split(" ")[1];
     let decoded = jwt.verify(trueToken, secretWord);
-    console.log(decoded)
+    // console.log(decoded)
     if (!decoded) {
         return next(createError(404, 'Токен не валидный!'))
     }
@@ -132,19 +133,27 @@ app.post('/ajax/users.json/addUser', function(req, res, next) {
     else {
         return next(createError(400, 'Такой логин уже занят'))
     }
+});
 
+//получение списка файлов
+app.get('/ajax/users.json/files', function (req, res) {
+    const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
+    const filesWithoutEnd=files.map(function(elem) {  //второй способ
+        return path.basename(elem, path.extname(elem))
+    });
+    res.json({files:filesWithoutEnd});  //генерация страниц 1-ый параметр шаблон
 });
 
 
-// app.get('/ajax/users.json/files', function (req, res) {
-//     const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
-//     const filesWithoutEnd=files.map(function(elem) {  //второй способ
-//         return path.basename(elem, path.extname(elem))
-//     });
-//     res.render('home', {value: filesWithoutEnd});  //генерация страниц 1-ый параметр шаблон
-// });
 
-
+//запоминание имени
+app.get('/ajax/users.json/name', function (req, res) {
+    let pretoken=req.headers.authorization;
+    let trueToken=pretoken.split(" ")[1];
+    let decodedId = jwt.verify(trueToken, secretWord).id;
+    let nameUser = threreIsSuchId(userList, decodedId).name;
+    res.json({name:nameUser});  //генерация страниц 1-ый параметр шаблон
+});
 
 
 app.use(function(req, res, next) {
