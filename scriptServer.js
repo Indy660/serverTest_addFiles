@@ -54,6 +54,27 @@ function deleteUserById(id, array){
     userList.splice(userIndexReal, 1);
 }
 
+//вспомогательная функция для перезаписи файлов
+function changeText(way, str1, str2) {
+    let oldText=fs.readFileSync(way, "utf8");
+    let domenWithoutDots=str1.replace(/\./g, "");
+    let newText=oldText.replace(/__DOMAIN__/g, str1).replace(/__DOMAINWITHOUTDOT__/g, domenWithoutDots).replace(/__IP_ADDRESS__/g, str2);
+    return newText
+}
+
+
+function findIp() {
+    // 255.255.255.255
+    // let string = fs.readFile(directory, "utf8", function(error,data){ });
+    let string = fs.readFileSync(directory, "utf8");
+    var blocks = string.split(".");
+    if(blocks.length === 4) {
+        return blocks.every(function(block) {
+            return parseInt(block,10) >=0 && parseInt(block,10) <= 255;
+        });
+    }
+    return false;
+}
 
 
 
@@ -106,13 +127,11 @@ app.get('/ajax/users.json', function (req, res) {
 //удаление пользователей из списка json
 app.post('/ajax/users.json/delete', function(req, res, next) {
     let decoded = jwt.verify(req.body.token, secretWord);
-    // console.log(req.body.token);
-    // console.log(decoded)
+    console.log(req.body.token);
+    console.log(decoded)
     if (decoded) {
         deleteUserById(req.body.id, userList);
-        res.json({
-            user_id: req.body.id
-        });
+        res.json({success:1});
     }
 });
 
@@ -135,15 +154,6 @@ app.post('/ajax/users.json/addUser', function(req, res, next) {
     }
 });
 
-//получение списка файлов
-app.get('/ajax/users.json/files', function (req, res) {
-    const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
-    const filesWithoutEnd=files.map(function(elem) {  //второй способ
-        return path.basename(elem, path.extname(elem))
-    });
-    res.json({files:filesWithoutEnd});  //генерация страниц 1-ый параметр шаблон
-});
-
 
 
 //запоминание имени
@@ -153,6 +163,46 @@ app.get('/ajax/users.json/name', function (req, res) {
     let decodedId = jwt.verify(trueToken, secretWord).id;
     let nameUser = threreIsSuchId(userList, decodedId).name;
     res.json({name:nameUser});  //генерация страниц 1-ый параметр шаблон
+});
+
+
+//получение списка файлов
+app.get('/ajax/users.json/files', function (req, res) {
+
+    let arrayIp=findIp();
+    console.log(arrayIp);
+
+    const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
+    const filesWithoutEnd=files.map(function(elem) {  //второй способ
+        return path.basename(elem, path.extname(elem))
+    });
+        // , ip:arrayIp
+    res.json({files:filesWithoutEnd});  //генерация страниц 1-ый параметр шаблон
+});
+
+
+
+//перезапись файла template.conf на выбранный файл
+app.post('/ajax/users.json/addFiles', function(req, res){
+    let domain = req.body.domain;
+    let ip = req.body.ip;
+    let template = directory +"\\" +"template.conf";
+    let newFile=directory +"\\" +domain+".conf";
+   fs.writeFile(newFile,  changeText(template, domain, ip), function(error){
+       if(error) throw error;
+    res.json({success:1});
+   })
+});
+
+
+//  удаления файла из текущей директории
+app.post('/ajax/users.json/delFiles', function(req, res) {
+    const folder = directory + "\\" + req.body.delFile + ".conf";
+    // console.error(folder);
+    fs.unlink(folder, err => {
+        console.error(err);
+    res.json({success:1});
+    })
 });
 
 
