@@ -62,19 +62,46 @@ function changeText(way, str1, str2) {
     return newText
 }
 
-
-function findIp() {
-    // 255.255.255.255
-    // let string = fs.readFile(directory, "utf8", function(error,data){ });
-    let string = fs.readFileSync(directory, "utf8");
-    var blocks = string.split(".");
-    if(blocks.length === 4) {
-        return blocks.every(function(block) {
-            return parseInt(block,10) >=0 && parseInt(block,10) <= 255;
-        });
+//вывод айпи из файла
+function findIp(way) {
+    let arrayIP=[];
+    for (i = 0; i < way.length; i++) {
+        let string = fs.readFileSync(directory+"\\"+way[i]+".conf", "utf8");
+        let ip = string.match(/\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/g);
+        arrayIP.push(ip);
     }
-    return false;
+    let finalIp = arrayIP.map(function(elem) {
+        if (elem === null) return elem="Некотректный Ip";
+        else {return elem.join()}
+    });
+    // console.log(finalIp);
+    return finalIp
 }
+//объединение название файла и айпи а один объект
+function makeObjFileWithIp(arrayFile, arrayIp) {
+    let result = [];
+    for (let i = 0; i < arrayFile.length; i++) {
+        let obj={};
+        obj.domain=arrayFile[i];
+        obj.ip= arrayIp[i];
+        result.push(obj)
+    }
+    return result
+}
+
+//объединение название файла и айпи а один объект   не достаточно хорошо
+// function makeObjFileWithIp(arrayFile, arrayIp) {
+//     let result = [];
+//     filesWithIp = {};
+//     for (let i = 0; i < arrayFile.length; i++) {
+//         filesWithIp[arrayFile[i]] = arrayIp[i];
+//         result.push(filesWithIp);
+//     }
+//     return result
+// }
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -126,13 +153,13 @@ app.get('/ajax/users.json', function (req, res) {
 
 //удаление пользователей из списка json
 app.post('/ajax/users.json/delete', function(req, res, next) {
-    let decoded = jwt.verify(req.body.token, secretWord);
-    console.log(req.body.token);
-    console.log(decoded)
-    if (decoded) {
+    // let decoded = jwt.verify(req.body.token, secretWord);
+    // console.log(req.body.token);
+    // console.log(decoded)
+    // if (decoded) {           //после authorization данная проверка не нужна
         deleteUserById(req.body.id, userList);
         res.json({success:1});
-    }
+    // }
 });
 
 
@@ -166,18 +193,18 @@ app.get('/ajax/users.json/name', function (req, res) {
 });
 
 
+
+
 //получение списка файлов
 app.get('/ajax/users.json/files', function (req, res) {
-
-    let arrayIp=findIp();
-    console.log(arrayIp);
-
     const files = fs.readdirSync(directory);    //Прочитываем файлы из текущей директории
     const filesWithoutEnd=files.map(function(elem) {  //второй способ
         return path.basename(elem, path.extname(elem))
     });
-        // , ip:arrayIp
-    res.json({files:filesWithoutEnd});  //генерация страниц 1-ый параметр шаблон
+    // console.log(filesWithoutEnd);
+    let arrayIP=findIp(filesWithoutEnd);
+    let result=makeObjFileWithIp(filesWithoutEnd, arrayIP);
+    res.json({files:result});//генерация страниц 1-ый параметр шаблон
 });
 
 
