@@ -40,6 +40,20 @@
 //     }
 //   },
 
+// метод заменен на filter
+// computed: {
+//     searchMethod() {
+//         let obj = this.userFiles;
+//         let newArray = [];
+//         const serach = this.search.toLowerCase();
+//         for (let key in obj) {
+//             let el = obj[key]
+//             if (el.domain.toLowerCase().indexOf(serach) != -1) newArray.push(el);
+//             else if (el.ip.toLowerCase().indexOf(serach) != -1) newArray.push(el)
+//         }
+//         return newArray;
+//     }
+// }
 
 
 // ____________________JS  ____________________
@@ -287,3 +301,16 @@ app.get('/enter', function (req, res) {
 //         res.send("200");//выведем 200ок
 //     });
 // });
+
+
+
+//объединение название файла и айпи а один объект   не достаточно хорошо
+// function makeObjFileWithIp(arrayFile, arrayIp) {
+//     let result = [];
+//     filesWithIp = {};
+//     for (let i = 0; i < arrayFile.length; i++) {
+//         filesWithIp[arrayFile[i]] = arrayIp[i];
+//         result.push(filesWithIp);
+//     }
+//     return result
+// }

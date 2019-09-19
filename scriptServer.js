@@ -71,7 +71,7 @@ function findIp(way) {
         arrayIP.push(ip);
     }
     let finalIp = arrayIP.map(function(elem) {
-        if (elem === null) return elem="Некотректный Ip";
+        if (elem === null) return elem="Некорректный Ip";
         else {return elem.join()}
     });
     // console.log(finalIp);
@@ -89,24 +89,9 @@ function makeObjFileWithIp(arrayFile, arrayIp) {
     return result
 }
 
-//объединение название файла и айпи а один объект   не достаточно хорошо
-// function makeObjFileWithIp(arrayFile, arrayIp) {
-//     let result = [];
-//     filesWithIp = {};
-//     for (let i = 0; i < arrayFile.length; i++) {
-//         filesWithIp[arrayFile[i]] = arrayIp[i];
-//         result.push(filesWithIp);
-//     }
-//     return result
-// }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
 
 app.post('/ajax/users.json/checkuser', function(req, res, next) {
     let nameUser = req.body.login;
@@ -205,6 +190,7 @@ app.get('/ajax/users.json/files', function (req, res) {
     let arrayIP=findIp(filesWithoutEnd);
     let result=makeObjFileWithIp(filesWithoutEnd, arrayIP);
     res.json({files:result});//генерация страниц 1-ый параметр шаблон
+    // console.log(result)
 });
 
 
