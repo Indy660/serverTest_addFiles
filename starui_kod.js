@@ -88,6 +88,25 @@ app.get('/addDomain', function(req, res){
     });
 });
 
+app.post('/ajax/users.json/checkuser', function(req, res, next) {
+    let nameUser = req.body.login;
+    let passwordUser = req.body.password;
+    let checkingUser=threreIsSuchUser(userList, nameUser);
+    return jwt.sign({ data, }, signature, { expiresIn: expiration });
+    if (checkingUser.password === passwordUser) {
+        let token = jwt.sign({ login: nameUser, id:checkingUser.id }, secretWord);
+        res.json({
+            token:token,
+            user_id: checkingUser.id,
+            user_login: checkingUser.login,
+            user_name: checkingUser.name,
+        });
+    }
+    else {
+        return next(createError(400, 'Вы ввели неправильные данные для входа'))
+    }
+});
+
 //страница проверки данных для входа
 app.get('/ajax/enter', function (req, res) {
     let login = req.query.login;

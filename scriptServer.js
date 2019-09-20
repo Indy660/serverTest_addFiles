@@ -13,16 +13,19 @@ const fs = require('fs');
 const path = require('path');
 let directory="C:\\Users\\User\\Desktop\\Работа\\vue_cli_table\\experimentFolder";
 
+// const md5 = require('js-md5');
+const { SHA3 } = require('sha3');//модуль хеширования SHA3
+
 let secretWord="Lox";
 
 
 
 let userList = [
-    { id: 1, name: 'Admin', login: 'Admin', password:"qwe"},
-    { id: 2, name: 'Вика', login: 'test', password:"123"},
-    { id: 3, name: 'Лёня', login: 'DimaK', password:"12345"},
-    { id: 4, name: 'Саша', login: 'gundi5', password:"BF236BF"},
-    { id: 5, name: 'Дима', login: 'Indy660', password: '123' }
+    { id: 1, name: 'Admin', login: 'Admin', password:"a50ddf0c61a045a2a328dc74f56a8389ee897082ee92b444050e62daf3cc44d9"},
+    { id: 2, name: 'Вика', login: 'test', password:"a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67"},
+    { id: 3, name: 'Лёня', login: 'DimaK', password:"7d4e3eec80026719639ed4dba68916eb94c7a49a053e05c8f9578fe4e5a3d7ea"},
+    { id: 4, name: 'Саша', login: 'gundi5', password:"de937ed521260b1e76b6e6d0dcb95a48bfcbf9833c36c09292cfd3d6f93b8601"},
+    { id: 5, name: 'Дима', login: 'Indy660', password: 'a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67' }
 ];
 let beginLengthArray=userList.length;
 
@@ -96,8 +99,13 @@ function makeObjFileWithIp(arrayFile, arrayIp) {
 app.post('/ajax/users.json/checkuser', function(req, res, next) {
     let nameUser = req.body.login;
     let passwordUser = req.body.password;
+
+    const hash = new SHA3(256);
+    hash.update(passwordUser);
+    let hashPasswordUser = hash.digest('hex');      //функция хэширования
+
     let checkingUser=threreIsSuchUser(userList, nameUser);
-    if (checkingUser.password === passwordUser) {
+    if (checkingUser.password === hashPasswordUser) {
         let token = jwt.sign({ login: nameUser, id:checkingUser.id }, secretWord);
         res.json({
             token:token,
@@ -154,8 +162,14 @@ app.post('/ajax/users.json/addUser', function(req, res, next) {
     let name = req.body.name;
     let login = req.body.login;
     let password = req.body.password;
+
+
+    const hash = new SHA3(256);
+    hash.update(password);
+    let hashPassword = hash.digest('hex');          //функция хэширования
+
     if (threreIsSuchUser(userList, login)===false) {
-        const newUserArray = {id: ++beginLengthArray, name: name, login: login, password: password};
+        const newUserArray = {id: ++beginLengthArray, name: name, login: login, password: hashPassword};
         userList.push(newUserArray);
         res.json({
             user_id: newUserArray.id
