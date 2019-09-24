@@ -7,7 +7,9 @@ const bodyParser = require('body-parser');   //для пост запросов
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 const createError = require('http-errors');
+
 const jwt = require('jsonwebtoken');
+let secretWord="Lox";
 
 const fs = require('fs');
 const path = require('path');
@@ -16,16 +18,43 @@ let directory="C:\\Users\\User\\Desktop\\Работа\\vue_cli_table\\experiment
 // const md5 = require('js-md5');
 const { SHA3 } = require('sha3');//модуль хеширования SHA3
 
-let secretWord="Lox";
+
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+const myPlaintextPassword = 's0/\/\P4$$w0rD';        //добавление соли
+
+const mariadb = require('mariadb');
+const pool = mariadb.createPool({host: 'localhost', user: 'root', connectionLimit: 5});
+pool.getConnection()
+    .then(conn => {
+
+        conn.query("SELECT id,name,login,password,userSalt FROM `data`.`users` LIMIT 10;")
+            .then((meta) => {
+                console.log(meta); //[ {val: 1}, meta: ... ]
+                return conn.query("INSERT INTO myTable value (?, ?)", [1, "mariadb"]);
+            })
+            .then((res) => {
+                console.log(res); // { affectedRows: 1, insertId: 1, warningStatus: 0 }
+                conn.end();
+            })
+            .catch(err => {
+                //handle error
+                conn.end();
+            })
+
+    }).catch(err => {
+    //not connected
+});
 
 
 
 let userList = [
-    { id: 1, name: 'Admin', login: 'Admin', password:"a50ddf0c61a045a2a328dc74f56a8389ee897082ee92b444050e62daf3cc44d9"},
-    { id: 2, name: 'Вика', login: 'test', password:"a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67"},
-    { id: 3, name: 'Лёня', login: 'DimaK', password:"7d4e3eec80026719639ed4dba68916eb94c7a49a053e05c8f9578fe4e5a3d7ea"},
-    { id: 4, name: 'Саша', login: 'gundi5', password:"de937ed521260b1e76b6e6d0dcb95a48bfcbf9833c36c09292cfd3d6f93b8601"},
-    { id: 5, name: 'Дима', login: 'Indy660', password: 'a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67' }
+    { id: 1, name: 'Админ', login: 'Admin', password:"400e55df78250581081a47492add062beace301ab6103cb0724cf18fac391011", userSalt:"$2b$10$uq/86WYjCG/JDNv3hzQE3e"},
+    { id: 2, name: 'Вика', login: 'test', password:"70b0f1e89c2a76f250c4fa45539647c99b92d82bde7b13f830a2378a52868a2c", userSalt:"$2b$10$uq/86WYjCG/JDNv3hzQE3e"},
+    { id: 3, name: 'Лёня', login: 'DimaK', password:"8dd2c1beef781a5bd3675f266780968405410637565a6992100a1dd8d169ff16", userSalt:"$2b$10$iAd79yW.SRFY4/kFGxn/Me"},
+    { id: 4, name: 'Саша', login: 'gundi5', password:"a557531e9960e0aa553abad2f1f1dfe583bab1236c4c764d6940832ddd729ee7", userSalt:"$2b$10$slw5uWC5bIuVP/L4vLQeJe"},
+    { id: 5, name: 'Дима', login: 'Indy660', password: '669ddcb29fbb19ec084a0d776ab9dd52160212bb25b80ee8729d30fe5988c30f', userSalt:"$2b$10$J8GeQISFzZnjYxJFfG.P9e" }
 ];
 let beginLengthArray=userList.length;
 
@@ -50,19 +79,27 @@ function threreIsSuchId(list, trueId) {
 }
 
 //вспомогательная функция для удаления из массива пользователя
-function deleteUserById(id, array){
+function deleteUserById(id, array) {
     let index = Number(id);
-    let userData=threreIsSuchId(array, index);
-    let userIndexReal=userList.indexOf(userData);
-    userList.splice(userIndexReal, 1);
+    let userData = threreIsSuchId(array, index);
+    let userIndexReal = array.indexOf(userData);
+    array.splice(userIndexReal, 1);
+}
+
+//вспомогательная функция для изменения пароля пользователя
+function changePasswordById(id, array, inputPassword) {
+    let index = Number(id);
+    let userData = threreIsSuchId(array, index);
+    let newPassword = inputPassword + userData.userSalt;
+    userData.password = makeHash(newPassword);
+    // console.log(newPassword+"+++"+userData.password)
 }
 
 //вспомогательная функция для перезаписи файлов
 function changeText(way, str1, str2) {
     let oldText=fs.readFileSync(way, "utf8");
     let domenWithoutDots=str1.replace(/\./g, "");
-    let newText=oldText.replace(/__DOMAIN__/g, str1).replace(/__DOMAINWITHOUTDOT__/g, domenWithoutDots).replace(/__IP_ADDRESS__/g, str2);
-    return newText
+    return oldText.replace(/__DOMAIN__/g, str1).replace(/__DOMAINWITHOUTDOT__/g, domenWithoutDots).replace(/__IP_ADDRESS__/g, str2);
 }
 
 //вывод айпи из файла
@@ -80,6 +117,7 @@ function findIp(way) {
     // console.log(finalIp);
     return finalIp
 }
+
 //объединение название файла и айпи а один объект
 function makeObjFileWithIp(arrayFile, arrayIp) {
     let result = [];
@@ -92,6 +130,13 @@ function makeObjFileWithIp(arrayFile, arrayIp) {
     return result
 }
 
+//функция создания хэша по SHA3 с размером 256
+function makeHash(word) {
+    const hash = new SHA3(256);
+    hash.update(word);
+    return hash.digest('hex');      //функция хэширования, hex-10 тичная система
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,20 +144,21 @@ function makeObjFileWithIp(arrayFile, arrayIp) {
 app.post('/ajax/users.json/checkuser', function(req, res, next) {
     let nameUser = req.body.login;
     let passwordUser = req.body.password;
-
-    const hash = new SHA3(256);
-    hash.update(passwordUser);
-    let hashPasswordUser = hash.digest('hex');      //функция хэширования
-
-    let checkingUser=threreIsSuchUser(userList, nameUser);
-    if (checkingUser.password === hashPasswordUser) {
-        let token = jwt.sign({ login: nameUser, id:checkingUser.id }, secretWord);
-        res.json({
-            token:token,
-            user_id: checkingUser.id,
-            user_login: checkingUser.login,
-            user_name: checkingUser.name,
-        });
+    let checkingUser = threreIsSuchUser(userList, nameUser);
+    if (Boolean(checkingUser)) {
+        let newPassword = passwordUser + checkingUser.userSalt;
+        if (checkingUser.password === makeHash(newPassword)) {
+            let token = jwt.sign({ login: nameUser, id:checkingUser.id }, secretWord);
+            res.json({
+                token:token,
+                user_id: checkingUser.id,
+                user_login: checkingUser.login,
+                user_name: checkingUser.name,
+            });
+        }
+        else {
+            return next(createError(400, 'Вы ввели неправильный пароль'))
+        }
     }
     else {
         return next(createError(400, 'Вы ввели неправильные данные для входа'))
@@ -156,20 +202,30 @@ app.post('/ajax/users.json/delete', function(req, res, next) {
 });
 
 
+//изменение пароля у пользователя
+app.post('/ajax/users.json/changepassword', function(req, res, next) {
+    if (req.body.password === req.body.repeatPassword) {
+        changePasswordById(req.body.id, userList, req.body.password);
+        // console.log(req.body.id, req.body.password);
+        res.json({success: 1});
+    }
+    else {
+        return next(createError(400, 'Пароли должны совпадать'))
+    }
+});
+
 
 //добавление пользователей в список json
 app.post('/ajax/users.json/addUser', function(req, res, next) {
     let name = req.body.name;
     let login = req.body.login;
     let password = req.body.password;
-
-
-    const hash = new SHA3(256);
-    hash.update(password);
-    let hashPassword = hash.digest('hex');          //функция хэширования
-
     if (threreIsSuchUser(userList, login)===false) {
-        const newUserArray = {id: ++beginLengthArray, name: name, login: login, password: hashPassword};
+        let salt = bcrypt.genSaltSync(10);
+        let newPassword=password+salt;
+        // console.log(salt+"+++++++"+newPassword);
+        const newUserArray = {id: ++beginLengthArray, name: name, login: login, password: makeHash(newPassword), userSalt: salt};
+        // console.log(newUserArray);
         userList.push(newUserArray);
         res.json({
             user_id: newUserArray.id
@@ -188,7 +244,8 @@ app.get('/ajax/users.json/name', function (req, res) {
     let trueToken=pretoken.split(" ")[1];
     let decodedId = jwt.verify(trueToken, secretWord).id;
     let nameUser = threreIsSuchId(userList, decodedId).name;
-    res.json({name:nameUser});  //генерация страниц 1-ый параметр шаблон
+    let nameLogin = threreIsSuchId(userList, decodedId).login;
+    res.json({name:nameUser, login:nameLogin});  //генерация страниц 1-ый параметр шаблон
 });
 
 
