@@ -24,28 +24,11 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const myPlaintextPassword = 's0/\/\P4$$w0rD';        //добавление соли
 
-const mariadb = require('mariadb');
-const pool = mariadb.createPool({host: 'localhost', user: 'root', connectionLimit: 5});
-pool.getConnection()
-    .then(conn => {
+// const mariadb = require('mariadb');   //на данный момент модуль марияДб не нужна
+// const pool = mariadb.createPool({host: 'localhost', user: 'root', connectionLimit: 5});         //создает соединения
 
-        conn.query("SELECT id,name,login,password,userSalt FROM `data`.`users` LIMIT 10;")
-            .then((meta) => {
-                console.log(meta); //[ {val: 1}, meta: ... ]
-                return conn.query("INSERT INTO myTable value (?, ?)", [1, "mariadb"]);
-            })
-            .then((res) => {
-                console.log(res); // { affectedRows: 1, insertId: 1, warningStatus: 0 }
-                conn.end();
-            })
-            .catch(err => {
-                //handle error
-                conn.end();
-            })
+const mysql = require('mysql2');
 
-    }).catch(err => {
-    //not connected
-});
 
 
 
@@ -139,7 +122,28 @@ function makeHash(word) {
 
 
 
+
+const connection = mysql.createConnection({         //создает соединения
+    host: 'localhost',
+    user: 'root',
+    database: 'data'
+});
+
+function sqlQuery(sql) {
+    return new Promise ((res, rej) => {
+        connection.query(sql, (err, a) => {
+            if (err) {
+                return rej(err);
+            }
+            return  res(a);
+        })
+    }).then(rows => {return (rows)})
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 
 app.post('/ajax/users.json/checkuser', function(req, res, next) {
     let nameUser = req.body.login;
@@ -186,7 +190,9 @@ app.use(function(req, res, next) {      ///обрабатывает все за�
 
 //страница json массива
 app.get('/ajax/users.json', function (req, res) {
-    res.json(userList);
+    sqlQuery('SELECT * FROM users').then(userList => {
+        res.json(userList);
+    })
 });
 
 
