@@ -41,33 +41,81 @@ let userList = [
 ];
 let beginLengthArray=userList.length;
 
-//есть ли такой логин в массиве
-function threreIsSuchUser(list, trueLogin) {
-    for (let i = 0; i < list.length; i++) {
-        if (list[i].login === trueLogin) {
-            return list[i]
-        }
-    }
-    return false
+const connection = mysql.createConnection({         //создает соединения
+    host: 'localhost',
+    user: 'root',
+    database: 'data'
+});
+
+function sqlQuery(sql, add) {
+    return new Promise ((resolve, reject) => {
+        connection.query(sql, add, (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            return  resolve(result);
+        })
+    })
 }
 
+function getUserList(){
+    return sqlQuery('SELECT * FROM users')
+}
+
+
+//есть ли такой логин в массиве
+function threreIsSuchUser(trueLogin) {
+    // let whatWeSearch="SELECT * FROM `users` WHERE `login` = '" + trueLogin + "'";
+    return sqlQuery("SELECT * FROM `users` WHERE `login` = ? ", [ trueLogin])
+        .then(list => {
+            if (list.length === 1) {return list[0]}
+             else {return false}
+        })
+}
+
+// console.log(threreIsSuchUser("Admin"))
+
 //есть ли такой айди в массиве
-function threreIsSuchId(list, trueId) {
-    for (let i = 0; i < list.length; i++) {
-        if (list[i].id === trueId) {
-            return list[i]
-        }
-    }
-    return false
+function threreIsSuchId(trueID) {
+    // let whatWeSearch='SELECT * FROM `users` WHERE `login` = ' + "'" + trueLogin + "'";
+    return sqlQuery('SELECT * FROM `users` WHERE `id` = ' + "'" + trueID + "'")
+        .then(list => {
+            if (list.length === 1) {return list[0]}
+            else {return false}
+        })
 }
 
 //вспомогательная функция для удаления из массива пользователя
-function deleteUserById(id, array) {
-    let index = Number(id);
-    let userData = threreIsSuchId(array, index);
-    let userIndexReal = array.indexOf(userData);
-    array.splice(userIndexReal, 1);
+function deleteUserById(id) {
+    return sqlQuery('DELETE FROM `users` WHERE `id` = ' + Number(id));
 }
+
+
+
+//добавление пользователей в список json
+app.post('/ajax/users.json/addUser', function(req, res, next) {
+    let name = req.body.name;
+    let login = req.body.login;
+    let password = req.body.password;
+    console.log(threreIsSuchUser(login));
+   return threreIsSuchUser(login)  {
+        let salt = bcrypt.genSaltSync(10);
+        let newPassword=password+salt;
+         console.log(salt+"+++++++"+newPassword);
+        const newUserArray = {id: ++beginLengthArray, name: name, login: login, password: makeHash(newPassword), userSalt: salt};
+        // console.log(newUserArray);
+        return sqlQuery('INSERT INTO `users` = ' + "'" +  newUserArray + "'" )
+            .then(userList => {
+                res.json(userList);
+            })
+        // res.json({
+        //     user_id: newUserArray.id
+        // });
+    }
+    else {
+        return next(createError(400, 'Такой логин уже занят'))
+    }
+});
 
 //вспомогательная функция для изменения пароля пользователя
 function changePasswordById(id, array, inputPassword) {
@@ -122,51 +170,35 @@ function makeHash(word) {
 
 
 
-
-const connection = mysql.createConnection({         //создает соединения
-    host: 'localhost',
-    user: 'root',
-    database: 'data'
-});
-
-function sqlQuery(sql) {
-    return new Promise ((res, rej) => {
-        connection.query(sql, (err, a) => {
-            if (err) {
-                return rej(err);
-            }
-            return  res(a);
-        })
-    }).then(rows => {return (rows)})
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 
 app.post('/ajax/users.json/checkuser', function(req, res, next) {
     let nameUser = req.body.login;
     let passwordUser = req.body.password;
-    let checkingUser = threreIsSuchUser(userList, nameUser);
-    if (Boolean(checkingUser)) {
-        let newPassword = passwordUser + checkingUser.userSalt;
-        if (checkingUser.password === makeHash(newPassword)) {
-            let token = jwt.sign({ login: nameUser, id:checkingUser.id }, secretWord);
-            res.json({
-                token:token,
-                user_id: checkingUser.id,
-                user_login: checkingUser.login,
-                user_name: checkingUser.name,
-            });
+    threreIsSuchUser(nameUser).then((checkingUser)=>{
+        if (Boolean(checkingUser)) {
+            let newPassword = passwordUser + checkingUser.userSalt;
+            // console.log(newPassword+" = "+ passwordUser+" + "+checkingUser.userSalt);
+            // console.log(checkingUser)
+            if (checkingUser.password === makeHash(newPassword)) {
+                let token = jwt.sign({ login: nameUser, id:checkingUser.id }, secretWord);
+                res.json({
+                    token:token,
+                    user_id: checkingUser.id,
+                    user_login: checkingUser.login,
+                    user_name: checkingUser.name,
+                });
+            }
+            else {
+                return next(createError(400, 'Вы ввели неправильный пароль'))
+            }
         }
         else {
-            return next(createError(400, 'Вы ввели неправильный пароль'))
+            return next(createError(400, 'Вы ввели неправильные данные для входа'))
         }
-    }
-    else {
-        return next(createError(400, 'Вы ввели неправильные данные для входа'))
-    }
+
+    })
+
 });
 
 
@@ -187,10 +219,9 @@ app.use(function(req, res, next) {      ///обрабатывает все за�
 });
 
 
-
 //страница json массива
 app.get('/ajax/users.json', function (req, res) {
-    sqlQuery('SELECT * FROM users').then(userList => {
+    getUserList().then(userList => {
         res.json(userList);
     })
 });
@@ -198,11 +229,7 @@ app.get('/ajax/users.json', function (req, res) {
 
 //удаление пользователей из списка json
 app.post('/ajax/users.json/delete', function(req, res, next) {
-    // let decoded = jwt.verify(req.body.token, secretWord);
-    // console.log(req.body.token);
-    // console.log(decoded)
-    // if (decoded) {           //после authorization данная проверка не нужна
-        deleteUserById(req.body.id, userList);
+        deleteUserById(req.body.id);
         res.json({success:1});
     // }
 });
@@ -221,26 +248,7 @@ app.post('/ajax/users.json/changepassword', function(req, res, next) {
 });
 
 
-//добавление пользователей в список json
-app.post('/ajax/users.json/addUser', function(req, res, next) {
-    let name = req.body.name;
-    let login = req.body.login;
-    let password = req.body.password;
-    if (threreIsSuchUser(userList, login)===false) {
-        let salt = bcrypt.genSaltSync(10);
-        let newPassword=password+salt;
-        // console.log(salt+"+++++++"+newPassword);
-        const newUserArray = {id: ++beginLengthArray, name: name, login: login, password: makeHash(newPassword), userSalt: salt};
-        // console.log(newUserArray);
-        userList.push(newUserArray);
-        res.json({
-            user_id: newUserArray.id
-        });
-    }
-    else {
-        return next(createError(400, 'Такой логин уже занят'))
-    }
-});
+/////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
