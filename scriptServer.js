@@ -18,28 +18,13 @@ let directory="C:\\Users\\User\\Desktop\\Работа\\vue_cli_table\\experiment
 // const md5 = require('js-md5');
 const { SHA3 } = require('sha3');//модуль хеширования SHA3
 
-
-
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const myPlaintextPassword = 's0/\/\P4$$w0rD';        //добавление соли
 
-// const mariadb = require('mariadb');   //на данный момент модуль марияДб не нужна
-// const pool = mariadb.createPool({host: 'localhost', user: 'root', connectionLimit: 5});         //создает соединения
 
 const mysql = require('mysql2');
 
-
-
-
-let userList = [
-    { id: 1, name: 'Админ', login: 'Admin', password:"400e55df78250581081a47492add062beace301ab6103cb0724cf18fac391011", userSalt:"$2b$10$uq/86WYjCG/JDNv3hzQE3e"},
-    { id: 2, name: 'Вика', login: 'test', password:"70b0f1e89c2a76f250c4fa45539647c99b92d82bde7b13f830a2378a52868a2c", userSalt:"$2b$10$uq/86WYjCG/JDNv3hzQE3e"},
-    { id: 3, name: 'Лёня', login: 'DimaK', password:"8dd2c1beef781a5bd3675f266780968405410637565a6992100a1dd8d169ff16", userSalt:"$2b$10$iAd79yW.SRFY4/kFGxn/Me"},
-    { id: 4, name: 'Саша', login: 'gundi5', password:"a557531e9960e0aa553abad2f1f1dfe583bab1236c4c764d6940832ddd729ee7", userSalt:"$2b$10$slw5uWC5bIuVP/L4vLQeJe"},
-    { id: 5, name: 'Дима', login: 'Indy660', password: '669ddcb29fbb19ec084a0d776ab9dd52160212bb25b80ee8729d30fe5988c30f', userSalt:"$2b$10$J8GeQISFzZnjYxJFfG.P9e" }
-];
-let beginLengthArray=userList.length;
 
 const connection = mysql.createConnection({         //создает соединения
     host: 'localhost',
@@ -58,10 +43,6 @@ function sqlQuery(sql, add) {
     })
 }
 
-function getUserList(){
-    return sqlQuery('SELECT * FROM users')
-}
-
 
 //есть ли такой логин в массиве
 function threreIsSuchUser(trueLogin) {
@@ -73,12 +54,11 @@ function threreIsSuchUser(trueLogin) {
         })
 }
 
-// console.log(threreIsSuchUser("Admin"))
 
 //есть ли такой айди в массиве
 function threreIsSuchId(trueID) {
     // let whatWeSearch='SELECT * FROM `users` WHERE `login` = ' + "'" + trueLogin + "'";
-    return sqlQuery('SELECT * FROM `users` WHERE `id` = ' + "'" + trueID + "'")
+    return sqlQuery("SELECT * FROM `users` WHERE `id` = ? ", [ trueID])
         .then(list => {
             if (list.length === 1) {return list[0]}
             else {return false}
@@ -90,40 +70,25 @@ function deleteUserById(id) {
     return sqlQuery('DELETE FROM `users` WHERE `id` = ' + Number(id));
 }
 
+//вспомогательная функция по добавлению поьзователя в SQL
+function addNewUser(name, login, password) {
+    let salt = bcrypt.genSaltSync(10);
+    let newPassword = password + salt;
+    return sqlQuery('INSERT INTO `users` (name, login, password, userSalt) VALUES (?, ?, ?, ?)', [name, login, makeHash(newPassword), salt])
+}
 
-
-//добавление пользователей в список json
-app.post('/ajax/users.json/addUser', function(req, res, next) {
-    let name = req.body.name;
-    let login = req.body.login;
-    let password = req.body.password;
-    console.log(threreIsSuchUser(login));
-   return threreIsSuchUser(login)  {
-        let salt = bcrypt.genSaltSync(10);
-        let newPassword=password+salt;
-         console.log(salt+"+++++++"+newPassword);
-        const newUserArray = {id: ++beginLengthArray, name: name, login: login, password: makeHash(newPassword), userSalt: salt};
-        // console.log(newUserArray);
-        return sqlQuery('INSERT INTO `users` = ' + "'" +  newUserArray + "'" )
-            .then(userList => {
-                res.json(userList);
-            })
-        // res.json({
-        //     user_id: newUserArray.id
-        // });
-    }
-    else {
-        return next(createError(400, 'Такой логин уже занят'))
-    }
-});
 
 //вспомогательная функция для изменения пароля пользователя
-function changePasswordById(id, array, inputPassword) {
+function changePasswordById(id, inputPassword) {
     let index = Number(id);
-    let userData = threreIsSuchId(array, index);
-    let newPassword = inputPassword + userData.userSalt;
-    userData.password = makeHash(newPassword);
-    // console.log(newPassword+"+++"+userData.password)
+    return threreIsSuchId(index).then(user => {
+        let newPassword = inputPassword + user.userSalt;
+        return user.password = makeHash(newPassword)
+        }).then(password => {
+            console.log(password);
+            console.log( sqlQuery("UPDATE  `users` SET `password` = ? WHERE `id` = " + index, [password]) );
+             return sqlQuery("UPDATE `users` SET `password` = ? WHERE `id` = " + index, [password])
+        });
 }
 
 //вспомогательная функция для перезаписи файлов
@@ -142,7 +107,7 @@ function findIp(way) {
         arrayIP.push(ip);
     }
     let finalIp = arrayIP.map(function(elem) {
-        if (elem === null) return elem="Некорректный Ip";
+        if (elem === null) return elem = "Некорректный Ip";
         else {return elem.join()}
     });
     // console.log(finalIp);
@@ -178,8 +143,6 @@ app.post('/ajax/users.json/checkuser', function(req, res, next) {
     threreIsSuchUser(nameUser).then((checkingUser)=>{
         if (Boolean(checkingUser)) {
             let newPassword = passwordUser + checkingUser.userSalt;
-            // console.log(newPassword+" = "+ passwordUser+" + "+checkingUser.userSalt);
-            // console.log(checkingUser)
             if (checkingUser.password === makeHash(newPassword)) {
                 let token = jwt.sign({ login: nameUser, id:checkingUser.id }, secretWord);
                 res.json({
@@ -231,25 +194,41 @@ app.get('/ajax/users.json', function (req, res) {
 app.post('/ajax/users.json/delete', function(req, res, next) {
         deleteUserById(req.body.id);
         res.json({success:1});
-    // }
 });
 
 
 //изменение пароля у пользователя
 app.post('/ajax/users.json/changepassword', function(req, res, next) {
     if (req.body.password === req.body.repeatPassword) {
-        changePasswordById(req.body.id, userList, req.body.password);
-        // console.log(req.body.id, req.body.password);
-        res.json({success: 1});
+        changePasswordById(req.body.id, req.body.password).then(() => {
+            res.json({success: 1});
+        })
     }
     else {
         return next(createError(400, 'Пароли должны совпадать'))
     }
 });
 
-
-/////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+//добавление пользователей в список json
+app.post('/ajax/users.json/addUser', function(req, res, next) {
+    let name = req.body.name;
+    let login = req.body.login;
+    let password = req.body.password;
+    const promiseResult = threreIsSuchUser(login);
+    promiseResult.then(function(loginInput) {
+        if (Boolean(loginInput) === false) {
+            addNewUser(name, login, password)
+                .then(addUser => {
+                    res.json(addUser);
+                })
+        }
+        else {
+            return next(createError(400, 'Такой логин уже занят'))
+        }
+    }).catch(function(err){
+        next(err)               //отлавливается только при ошибке в булевом false
+    })
+});
 
 
 //запоминание имени
@@ -257,9 +236,9 @@ app.get('/ajax/users.json/name', function (req, res) {
     let pretoken=req.headers.authorization;
     let trueToken=pretoken.split(" ")[1];
     let decodedId = jwt.verify(trueToken, secretWord).id;
-    let nameUser = threreIsSuchId(userList, decodedId).name;
-    let nameLogin = threreIsSuchId(userList, decodedId).login;
-    res.json({name:nameUser, login:nameLogin});  //генерация страниц 1-ый параметр шаблон
+    threreIsSuchId(decodedId).then(user => {
+        res.json({name: user.name, login: user.login});
+    });
 });
 
 
@@ -271,11 +250,9 @@ app.get('/ajax/users.json/files', function (req, res) {
     const filesWithoutEnd=files.map(function(elem) {  //второй способ
         return path.basename(elem, path.extname(elem))
     });
-    // console.log(filesWithoutEnd);
     let arrayIP=findIp(filesWithoutEnd);
     let result=makeObjFileWithIp(filesWithoutEnd, arrayIP);
-    res.json({files:result});//генерация страниц 1-ый параметр шаблон
-    // console.log(result)
+    res.json({files:result});
 });
 
 
@@ -296,7 +273,6 @@ app.post('/ajax/users.json/addFiles', function(req, res){
 //  удаления файла из текущей директории
 app.post('/ajax/users.json/delFiles', function(req, res) {
     const folder = directory + "\\" + req.body.delFile + ".conf";
-    // console.error(folder);
     fs.unlink(folder, err => {
         console.error(err);
     res.json({success:1});
@@ -307,6 +283,7 @@ app.post('/ajax/users.json/delFiles', function(req, res) {
 app.use(function(req, res, next) {
     return next(createError(404, 'Api метод не существует'))
 });
+
 
 app.use(function(err, req, res, next) {
     res.status(err.statusCode || 500);
