@@ -307,6 +307,103 @@ app.listen(3000, function () {
 // ревлизовать функцию путь к папке результат колбек или промисс сумма чисел всех файлов (нельзя использовать синхзроные функция
 ///////////////////////////////////////////////////////////////////////////////
 
+let newDirectory="C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_1";
+
+
+function countNumbersInFile(file) {
+    return fs.readFileSync(file, "utf8");
+}
+
+
+function arrayFilesFunc(way) {
+    return fs.readdirSync(way);
+}
+
+
+function whatInThisFolder(way) {
+    let unSorted=arrayFilesFunc(way);
+    let arrayFolders = unSorted.filter(function(elem) {
+        if (elem.substr(-4, 4) !== ".txt") {
+            return true;
+        } else {
+            return false;
+        }
+    });
+    let arrayFiles = unSorted.filter(function(elem) {
+        if (elem.substr(-4, 4) === ".txt") {
+            return true;
+        } else {
+            return false;
+        }
+    });
+return {arrayFolders, arrayFiles}
+}
+
+
+function deleteFromArray(obj, whatDelete) {
+    obj[whatDelete].shift();
+    return obj
+}
+
+
+function goDown(way) {
+
+}
+// console.log(whatInThisFolder("C:\\Users\\User\\Desktop\\Summa cifr"))
+// let a = {
+//     arrayFolders: ['1', '2', '3 пусто'],
+//     arrayFiles: ['52.txt']
+// }
+
+
+
+
+
+
+
+
+
+
+// function countNumbers(way) {
+//     let summ = 0;
+//     let arrayFiles=arrayFilesFunc(way);
+//     console.log("arrayFiles = "+arrayFiles)
+//     for (let i=0; i<arrayFiles.length; i++) {
+//         summ+=Number(countNumbersInFile(way+"\\"+arrayFiles[i]));
+//     }
+//     return summ;
+// }
+//
+//
+//
+//
+//
+// console.log('answer = '+countNumbers(newDirectory));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // function countAllNumbers() {
 //     let newDirectory="C:\\Users\\User\\Desktop\\Summa cifr";
@@ -322,16 +419,19 @@ app.listen(3000, function () {
 //              });
 //   return  console.log(fileContent);
 // }
-function countNumbersInFile(way) {
-    return fs.readFile(way, "utf8",
-        function (error, data) {
-            if (error) throw error;
-            console.log(data);
-        });
-}
 
 
-// let newDirectory="C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_1";
+
+// function countNumbersInFile(way) {
+//     return fs.readFile(way, "utf8",
+//         function (error, data) {
+//             if (error) throw error;
+//             console.log(data);
+//         });
+// }
+
+
+
 //  fs.readdir(newDirectory,  function(error,data) {
 //     if(error) throw error; // если возникла ошибка
 //     console.log(data);  // выводим считанные данные
@@ -367,16 +467,49 @@ var async = require("async");
 var obj = {dev: "/dev.json", test: "/test.json", prod: "/prod.json"};
 var configs = {};
 
-function countAllNumbers(way) {
-    return fs.readdir(way, function (error, data) {
-        if (error) throw error;
-        // for (let i=0, i<data.length, i++) {
-        fs.readFile(way+"\\"+data[0], "utf8",
-            function (error, data) {
-                if (error) throw error;
-                console.log(data);
-            })
-    })
-}
+// function countAllNumbers(way) {
+//     return fs.readdir(way, function (error, data) {
+//         if (error) throw error;
+//         // for (let i=0, i<data.length, i++) {
+//         fs.readFile(way+"\\"+data[0], "utf8",
+//             function (error, data) {
+//                 if (error) throw error;
+//                 console.log(data);
+//             })
+//     })
+// }
+//
+// countAllNumbers("C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_1")
+//
+// async.map(['C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_1','C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_2'], fs.stat, function(err, results){
+//    console.log(results)
+// });
+//
+// async.map(['C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_1','C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_2'],  fs.readFile, function(err, results){
+//     console.log(results)
+// });
 
-countAllNumbers("C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_1")
+
+// const fsPromises = fs.promises;
+// async function listDir() {
+//     try {
+//         return await fsPromises.readdir('experimentFolder');
+//     } catch (err) {
+//         console.error('Error occured while reading directory!', err);
+//     }
+// }
+// listDir();
+
+// async function file (way) {
+//         let arrayFiles = await fs.readdir(way, function (error, data) {
+//             if (error) throw error
+//             console.log(data)
+//         });
+//         await console.log(arrayFiles)
+//         // let numbers = await fs.readFile(way + "\\" + arrayFiles[0], "utf8",
+//         //     function (error, data) {
+//         //         if (error) throw error;
+//         //         console.log(data);
+//         //     })
+// }
+// file ("C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_1");
