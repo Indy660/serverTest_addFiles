@@ -310,8 +310,8 @@ app.listen(3000, function () {
 let newDirectory="C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_1";
 
 
-function countNumbersInFile(file) {
-    return fs.readFileSync(file, "utf8");
+function countNumbersInFile(way, file) {
+    return Number(fs.readFileSync(way+"\\"+file, "utf8"));
 }
 
 
@@ -321,7 +321,7 @@ function arrayFilesFunc(way) {
 
 
 function whatInThisFolder(way) {
-    let unSorted=arrayFilesFunc(way);
+    let unSorted = arrayFilesFunc(way);
     let arrayFolders = unSorted.filter(function(elem) {
         if (elem.substr(-4, 4) !== ".txt") {
             return true;
@@ -336,9 +336,50 @@ function whatInThisFolder(way) {
             return false;
         }
     });
-return {arrayFolders, arrayFiles}
+    return {arrayFolders, arrayFiles}
 }
 
+function countNumbersInThisFolder(way) {
+    let summ = 0;
+    let files = whatInThisFolder(way).arrayFiles;
+    //console.log(files)
+    for (let i=0; i<files.length; i++) {
+        summ+=countNumbersInFile(way, files[i])
+    }
+    return summ
+}
+
+function countAllNumbersInAllFolders (way) {
+    let beginNumbers=countNumbersInThisFolder(way);
+    function countNumbersInAllFoldersAbove(way) {
+        let summ = 0;   //сумма файлов в этой папке
+        let folders = whatInThisFolder(way).arrayFolders;
+        //console.log(folders);
+        if (folders.length !== 0) {     //суммирование все файлов в папке выше
+            for (let j = 0; j < folders.length; j++) {
+                let newWay = way + "\\" + folders[j];
+                summ += countNumbersInThisFolder(newWay);
+                console.log(j + ". " + folders[j] + " сумма " + summ)
+            }
+        }
+        if (folders.length !== 0) {         //если папка не пуста, то повторить операцию
+            for (let j = 0; j < folders.length; j++) {
+                let newWay = way + "\\" + folders[j];
+                let newFolders = whatInThisFolder(newWay).arrayFolders;
+                if (newFolders.length !== 0) {
+                    return summ + countNumbersInAllFoldersAbove(newWay)
+                }
+            }
+        }
+        return summ;
+    }
+    return beginNumbers+countNumbersInAllFoldersAbove(way)
+}
+console.log(countAllNumbersInAllFolders("C:\\Users\\User\\Desktop\\Summa cifr"));
+
+
+
+// countNumbersInThisFolder("C:\\Users\\User\\Desktop\\Summa cifr");
 
 function deleteFromArray(obj, whatDelete) {
     obj[whatDelete].shift();
