@@ -307,11 +307,57 @@ app.listen(3000, function () {
 // ревлизовать функцию путь к папке результат колбек или промисс сумма чисел всех файлов (нельзя использовать синхзроные функция
 ///////////////////////////////////////////////////////////////////////////////
 
-let newDirectory="C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_1";
+function thisIsFile(way) {
+    return fs.statSync(way).isFile()
+}
 
+function whatInThisFolder(way) {
+    let unSorted = arrayFilesFunc(way);
+    let arrayFolders = [];
+    let arrayFiles = [];
+    for (let i = 0; i<unSorted.length; i++) {
+        if (thisIsFile(path.join(way, unSorted[i])) === false) {
+            arrayFolders.push(way+"\\"+unSorted[i])
+        } else {
+            arrayFiles.push(path.join(way, unSorted[i]))
+        }
+    }
+    return {arrayFolders, arrayFiles}
+}
+
+// console.log(whatInThisFolder("C:\\Users\\User\\Desktop\\Summa cifr\\2-47"))
+
+
+
+function foldersAbove(way) {
+    let array=[];
+    let folders = whatInThisFolder(way).arrayFolders;
+     // console.log("папки "+folders);
+    if (folders.length !== 0) {         //если папка не пуста, то повторить операцию
+        for (let j = 0; j < folders.length; j++) {
+            let newWay = folders[j];
+            let newFolders = whatInThisFolder(newWay).arrayFolders;
+            if (newFolders.length !== 0) {
+                 array.push(newFolders)
+            }
+        }
+    }
+    return array;
+}
+
+
+function a(way, arrayFolders) {
+    let array = 0;
+    for (let i=0; i<arrayFolders.length; i++) {
+        arrayFolders[i]
+    }
+}
+
+// console.log("Папки уровнем выше: "+foldersAbove("C:\\Users\\User\\Desktop\\Summa cifr"))
+// a("C:\\Users\\User\\Desktop\\Summa cifr")
 
 function countNumbersInFile(way, file) {
-    return Number(fs.readFileSync(way+"\\"+file, "utf8"));
+    return Number(fs.readFileSync(path.join(way, file), "utf8"));
 }
 
 
@@ -320,24 +366,42 @@ function arrayFilesFunc(way) {
 }
 
 
-function whatInThisFolder(way) {
-    let unSorted = arrayFilesFunc(way);
-    let arrayFolders = unSorted.filter(function(elem) {
-        if (elem.substr(-4, 4) !== ".txt") {
-            return true;
-        } else {
-            return false;
-        }
-    });
-    let arrayFiles = unSorted.filter(function(elem) {
-        if (elem.substr(-4, 4) === ".txt") {
-            return true;
-        } else {
-            return false;
-        }
-    });
-    return {arrayFolders, arrayFiles}
-}
+// function whatInThisFolder(way) {
+//     let unSorted = arrayFilesFunc(way);
+//     let arrayFolders = unSorted.filter(function(elem) {
+//         if (elem.substr(-4, 4) !== ".txt") {
+//             return true;
+//         } else {
+//             return false;
+//         }
+//     });
+//     let arrayFiles = unSorted.filter(function(elem) {
+//         if (elem.substr(-4, 4) === ".txt") {
+//             return true;
+//         } else {
+//             return false;
+//         }
+//     });
+//     return {arrayFolders, arrayFiles}
+// }
+
+
+
+//сделать список файлов во всех папках (адрес)
+
+
+
+
+
+
+//
+// console.log(fs.statSync("C:\\Users\\User\\Desktop\\Summa cifr\\2-47\\7.txt").isFile())
+
+
+
+
+
+
 
 function countNumbersInThisFolder(way) {
     let summ = 0;
@@ -348,6 +412,22 @@ function countNumbersInThisFolder(way) {
     }
     return summ
 }
+
+function whatBeInNextFolder(way, arrayFolders) {
+    // let summ = 0;
+    let folders;
+    for (let i = 0; i<arrayFolders.length; i++) {
+        // summ += countNumbersInThisFolder(way +"\\"+ arrayFolders[i]);
+        folders = whatInThisFolder(way +"\\"+ arrayFolders[i]).arrayFiles;
+    }
+    if (folders !== 0) {
+        let newFolders=folders.shift();
+        return newFolders + whatBeInNextFolder(way +"\\"+  folders[0], folders)
+    }
+    return folders
+}
+
+
 
 function countAllNumbersInAllFolders (way) {
     let beginNumbers=countNumbersInThisFolder(way);
@@ -375,8 +455,7 @@ function countAllNumbersInAllFolders (way) {
     }
     return beginNumbers+countNumbersInAllFoldersAbove(way)
 }
-console.log(countAllNumbersInAllFolders("C:\\Users\\User\\Desktop\\Summa cifr"));
-
+// console.log(countAllNumbersInAllFolders("C:\\Users\\User\\Desktop\\Summa cifr"));
 
 
 // countNumbersInThisFolder("C:\\Users\\User\\Desktop\\Summa cifr");
@@ -385,6 +464,20 @@ function deleteFromArray(obj, whatDelete) {
     obj[whatDelete].shift();
     return obj
 }
+
+// if (folders.length !== 0) {     //суммирование все файлов в папке выше
+//     for (let j = 0; j < folders.length; j++) {
+//         let newWay = way + "\\" + folders[j];
+//         summ += countNumbersInThisFolder(newWay);
+//         console.log(j + ". " + folders[j] + " сумма " + summ)
+//         let newFolders = whatInThisFolder(newWay).arrayFolders;
+//         if (newFolders.length !== 0) {
+//             return summ + countNumbersInAllFoldersAbove(newWay)
+//         }
+//     }
+// }
+
+
 
 
 function goDown(way) {
@@ -420,28 +513,6 @@ function goDown(way) {
 //
 //
 // console.log('answer = '+countNumbers(newDirectory));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -554,3 +625,42 @@ var configs = {};
 //         //     })
 // }
 // file ("C:\\Users\\User\\Desktop\\Summa cifr\\1\\1_1");
+
+
+
+
+// function countAllNumbersInAllFolders (way) {
+//     let beginNumbers=countNumbersInThisFolder(way);
+//     function countNumbersInAllFoldersAbove(way) {
+//         let summ = 0;   //сумма файлов в этой папке
+//         let folders = whatInThisFolder(way).arrayFolders;   //существующая папка
+//         console.log("folders "+folders);
+//         if (folders.length !== 0) {     //суммирование все файлов в папке выше
+//             for (let j = 0; j < folders.length; j++) {
+//                 let newWay = path.join(way, folders[j]);
+//                 summ += countNumbersInThisFolder(newWay);
+//                 console.log(j + ". " + folders[j] + " сумма " + summ)
+//             }
+//         }
+//         //если папка не пуста, то повторить операцию
+//         let preFolders=[];
+//         for (let j = 0; j < folders.length; j++) {
+//             let newWay = path.join(way, folders[j]);
+//             let newFolders = whatInThisFolder(newWay).arrayFolders;
+//             console.log("папка "+j + ". " + newFolders[j] );
+//             if (newFolders.length !== 0) {
+//                 // summ + countNumbersInAllFoldersAbove(newWay)
+//                 preFolders.push(newFolders);
+//             }
+//         }
+//         if (preFolders > 0) {
+//             let a
+//             for (let i=0; i<preFolders.length; i++) {
+//                 a += summ + countNumbersInAllFoldersAbove(path.join(way, preFolders[i]))
+//             }
+//         }
+//         return a;
+//     }
+//     return beginNumbers+countNumbersInAllFoldersAbove(way)
+// }
+// console.log(countAllNumbersInAllFolders("C:\\Users\\User\\Desktop\\Summa cifr"));
