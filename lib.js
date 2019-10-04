@@ -70,27 +70,65 @@ function flattenDeep(arr1) {
 }
 
 
+// function countAllFolders (readyFolders, notEmptyFolders) {
+//     if (notEmptyFolders.length > 0) {
+//         for (let i = 0; i < notEmptyFolders.length; i++) {
+//             let nextFolder = notEmptyFolders[i];   //Прочитываем файлы из следующей директории
+//             // console.log("Путь " + nextFolder);
+//             let newFolders = whatInThisFolder(nextFolder).arrayFolders;  //массив следующих папок
+//             let lengthNewFolders = newFolders.length;
+//             // console.log("Кол-во папок в этой папке " + lengthNewFolders);
+//             if (lengthNewFolders === 0) {
+//                 notEmptyFolders.shift();
+//                 // console.log(hardFolder)
+//                 countAllFolders (readyFolders, notEmptyFolders)
+//             } else {
+//                 notEmptyFolders.shift();
+//                 notEmptyFolders = flattenDeep([...newFolders, readyFolders]);
+//                   console.log("hardFolder "+notEmptyFolders)
+//                 readyFolders= flattenDeep([readyFolders, ...newFolders]);
+//                 // console.log("simpleFolder "+readyFolders)
+//                 countAllFolders (readyFolders, notEmptyFolders)
+//             }
+//         }
+//     }
+//     return readyFolders
+// }
+
+
+// console.log("Кол-во папок в этой папке " + lengthNewFolders);
+//     readyFolders.push(newFolders);              //добавляем папки в конец
+//     readyFolders = flattenDeep([readyFolders]);
+//     notEmptyFolders.shift();                    //удаление первого элемента
+//     // console.log(i + " notEmptyFolders " + notEmptyFolders);
+//     notEmptyFolders.unshift(newFolders);        //добавляем новые папки в начало
+//     notEmptyFolders = flattenDeep([notEmptyFolders]);
+//     // console.log(i + " simpleFolder " + readyFolders)
+//     countAllFolders(readyFolders, notEmptyFolders)
+
+
+
+
 function countAllFolders (readyFolders, notEmptyFolders) {
-    if (notEmptyFolders.length !== 0) {
-        for (let i = 0; i < notEmptyFolders.length; i++) {
-            let nextFolder = notEmptyFolders[i];   //Прочитываем файлы из следующей директории
-            // console.log("Путь " + nextFolder);
-            let newFolders = whatInThisFolder(nextFolder).arrayFolders;  //массив следующих папок
-            let lengthNewFolders = newFolders.length;
-            // console.log("Кол-во папок в этой папке " + lengthNewFolders);
-            if (lengthNewFolders === 0) {
-                notEmptyFolders.shift();
-                // console.log(hardFolder)
-                countAllFolders (readyFolders, notEmptyFolders)
-            } else {
-                notEmptyFolders.shift();
-                notEmptyFolders = flattenDeep([...newFolders, readyFolders]);
-                 // console.log("hardFolder "+notEmptyFolders)
-                readyFolders= flattenDeep([readyFolders, ...newFolders]);
-                // console.log("simpleFolder "+readyFolders)
-                countAllFolders (readyFolders, notEmptyFolders)
+    if (notEmptyFolders.length > 0) {
+        let nextFolder = notEmptyFolders[0];   //Прочитываем файлы из следующей директории
+        console.log("Путь " + nextFolder);
+        console.log("Massiv " + notEmptyFolders );
+        let newFolders = whatInThisFolder(nextFolder).arrayFolders;  //массив следующих папок
+        let lengthNewFolders = newFolders.length;
+        if (lengthNewFolders === 0) {
+            notEmptyFolders.shift();
+            // console.log(hardFolder)
+            countAllFolders (readyFolders, notEmptyFolders)
+            } else if (lengthNewFolders > 1) {
+            readyFolders.push(newFolders);                     //добавляем папку в конец
+            readyFolders = flattenDeep([readyFolders]);
+
+            notEmptyFolders.shift();                         //удаление первого элемента
+            notEmptyFolders.unshift(newFolders);               //добавляем новые папку в начало
+            notEmptyFolders = flattenDeep([notEmptyFolders]);
+            countAllFolders (readyFolders, notEmptyFolders)
             }
-        }
     }
     return readyFolders
 }
