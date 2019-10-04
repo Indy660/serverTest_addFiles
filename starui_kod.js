@@ -629,3 +629,47 @@ app.listen(3000, function () {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function filesInDirectory(filesInDirectory) {
+    let filesArr = [] //массив для хранения txt файлов
+    let folderArr = [] //массив для хранения папок
+
+    for (let i = 0; i < filesInDirectory.length; i++) {
+        if (filesInDirectory[i].substr(-4, 4) === '.txt') filesArr.push(filesInDirectory[i])
+        else folderArr.push(filesInDirectory[i])
+    }
+    return {
+        filesArr,
+        folderArr
+    }
+}
+
+function dataInFolders(folderArr, directory) {
+    let filesCurrentDirectory = []
+    let finalFilesArr = []
+    let result = []
+
+    for (let i = 0; i < folderArr.length; i++) {
+        filesCurrentDirectory[i] = fs.readdirSync(directory + folderArr[i]); //Прочитываем файлы из текущей директории
+        let filesOrFolder = filesInDirectory(filesCurrentDirectory[i])
+
+        if (filesOrFolder.filesArr) {
+            finalFilesArr.push(filesOrFolder.filesArr)  //массив файлов
+        }
+        if (filesOrFolder.folderArr) {
+            dataInFolders(filesOrFolder.folderArr, directory + folderArr[i] + '/')  //массив папок
+        }
+    }
+
+    if (finalFilesArr != '') {
+        let a = finalFilesArr.join().split(',')
+        console.log(a)
+
+        for (let i = 0; i < a.length; i++) {
+            console.log(a[i])
+            result=[...a[i]];
+        }
+        //  console.log(result)
+    }
+}
