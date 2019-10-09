@@ -1,8 +1,8 @@
-const showFiles = require('./lib')
+const countNumbersInFiles = require('./lib')
 
 
 
-const list = showFiles('C:\\Users\\User\\Desktop\\Summa cifr')
+const list = countNumbersInFiles('C:\\Users\\User\\Desktop\\Работа\\serverTest_addFiles\\Summa cifr')
 
  console.log('RESULT',list)
-console.log('Length ',list.length)
+// console.log('Length ',list.length)

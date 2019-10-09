@@ -95,8 +95,20 @@ function showFiles (way) {
     return files
 }
 
+function countNumbersInFiles(way) {
+    let files = showFiles (way);
+    let summ = 0;
+    for (let i = 0; i < files.length; i++) {
+        summ += Number(fs.readFileSync( files[i], "utf8"));
+    }
+    return summ
+}
+
 // console.log(showFiles("C:\\Users\\User\\Desktop\\Summa cifr\\2-67"))
 
 
 
-module.exports = showFiles;
+module.exports = countNumbersInFiles;
+
+
+
