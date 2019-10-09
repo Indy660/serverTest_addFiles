@@ -1,32 +1,7 @@
 //Подключение модулей
-const express = require('express');
-const app = express();
-const cors=require('cors');
-app.use(cors());
-const bodyParser = require('body-parser');   //для пост запросов
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-const createError = require('http-errors');
-
-const jwt = require('jsonwebtoken');
-let secretWord="Lox";
 
 const fs = require('fs');
 const path = require('path');
-let directory="C:\\Users\\User\\Desktop\\Работа\\vue_cli_table\\experimentFolder";
-
-// const md5 = require('js-md5');
-const { SHA3 } = require('sha3');//модуль хеширования SHA3
-
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-const myPlaintextPassword = 's0/\/\P4$$w0rD';        //добавление соли
-
-
-const mysql = require('mysql2');
-
-
-
 
 function flattenDeep(arr1) {
     return arr1.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
